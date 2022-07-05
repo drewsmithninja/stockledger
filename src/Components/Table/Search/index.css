@@ -1,0 +1,18 @@
+input[type="search"]:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  text-align: right;
+}
+input[type="search"]::placeholder {
+  /* Firefox, Chrome, Opera */
+  text-align: right;
+}
+
+table,
+th,
+td {
+  border: 1px solid #e0e0e0;
+}
+
+thead tr {
+  background-color: grey;
+}
