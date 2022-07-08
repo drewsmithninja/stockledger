@@ -1,16 +1,9 @@
 export const headCells = [
   {
-    id: "TRAN_SEQ_NO",
+    id: "SR_NO",
     numeric: false,
     disablePadding: true,
-    label: "TRAN SEQ NO",
-    width: "100%",
-  },
-  {
-    id: "PROCESS_IND",
-    numeric: false,
-    disablePadding: true,
-    label: "PROCESS IND",
+    label: "SR_NO",
     width: "100%",
   },
   {
@@ -29,7 +22,7 @@ export const headCells = [
   },
   {
     id: "REF_ITEM_TYPE",
-    numeric: true,
+    numeric: false,
     disablePadding: false,
     label: "REF ITEM TYPE",
     width: "100%",

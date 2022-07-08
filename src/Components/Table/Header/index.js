@@ -13,6 +13,7 @@ import { makeStyles } from "@mui/styles";
 const useStyles = makeStyles({
   TableCell: {
     color: "#fff",
+    padding: "6px 6px !important",
   },
 });
 
@@ -39,10 +40,10 @@ export default function EnhancedTableHead(props) {
         <TableCell padding="checkbox"></TableCell>
         {headCells.map((searchData, index) => (
           <>
-            <TableCell>
+            <TableCell className={headerclasses.TableCell}>
               <SearchTableData
                 type="search"
-                name={searchData.label}
+                name={searchData.id}
                 placeholder={searchData.label}
                 value={
                   searchText && searchText[searchData.id]
@@ -76,7 +77,7 @@ export default function EnhancedTableHead(props) {
             <>
               <TableCell
                 key={headCell.id}
-                padding="normal"
+                className={headerclasses.TableCell}
                 size="small"
                 sortDirection={orderBy === headCell.id ? order : false}
               >

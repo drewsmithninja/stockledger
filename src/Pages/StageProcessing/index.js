@@ -45,6 +45,7 @@ const StageProcessing = () => {
   const [isValidExcel, setIsValidExcel] = useState(true);
   const [inputValue, setInputValue] = useState();
   const [allData, setAllData] = useState("");
+  const [isError, setIsError] = useState(false)
   const StageProceesClasses = useStyles();
   const StagingProcessing = useSelector(
     (state) => state.StagingProcessingReducers
@@ -64,6 +65,15 @@ const StageProcessing = () => {
     }
   }, [inputValue]);
 
+  useEffect(() => {
+    if (StagingProcessing.isError) {
+      setIsError(true)
+    }
+    else {
+      setIsError(false)
+    }
+  }, [StagingProcessing])
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (value == "") {
@@ -77,9 +87,6 @@ const StageProcessing = () => {
       });
     }
   };
-
-
-  
 
   const handleCapture = ({ target }) => {
     dispatch(resetStageProcessing());
@@ -104,15 +111,18 @@ const StageProcessing = () => {
   const handleDelete = (id) => {
     const data = [...tabledata];
     const updatedTable = data.filter((val) => {
-      return !id.includes(val.TRAN_SEQ_NO);
+      return !id.includes(val.SR_NO);
     });
-
     setTabledata(updatedTable);
   };
+
   const SubmitList = () => {
     dispatch(getStageProcessingRequest(JSON.stringify(tabledata)));
   };
 
+  const handleMsgClose = () => {
+    setIsError(false)
+  }
 
   return (
     <Box className={StageProceesClasses.maindiv}>
@@ -157,7 +167,17 @@ const StageProcessing = () => {
           headCells={headCells}
         />
       )}
-
+      <Stack spacing={2} sx={{ width: "100%" }}>
+        <Snackbar open={isError || StagingProcessing?.isSuccess} autoHideDuration={3000} onClose={handleMsgClose}>
+          <Alert
+            onClose={handleMsgClose}
+            severity={StagingProcessing?.isSuccess ? "success" : "error"}
+            sx={{ width: "100%" }}
+          >
+            {StagingProcessing?.messgae}
+          </Alert>
+        </Snackbar>
+      </Stack>
       <Stack spacing={2} sx={{ width: "100%" }}>
         <Snackbar
           open={!isValidExcel}

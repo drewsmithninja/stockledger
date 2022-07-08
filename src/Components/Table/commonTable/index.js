@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Header from "../Header";
 import {Table, TableBody, TableCell, TableContainer, TablePagination, TableRow,Paper, Checkbox, TextField } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import TableToolbar from "../Toolbar/index";
 
-
+const useStyles = makeStyles({
+  tabCell: {
+      padding: "6px 6px !important",
+      fontSize: "0.8rem !important",
+  },
+});
 
 const CommonTable = ({
   handleClick,
@@ -31,7 +37,9 @@ const CommonTable = ({
   headCells,
 }) => {
 
-    const [updateData, setupdateData] = useState({});    
+
+    const [updateData, setupdateData] = useState({});  
+    const rowClasses = useStyles();  
 
   const onBlur = (e , row) => {
     let temp = {...updateData};
@@ -71,7 +79,7 @@ const CommonTable = ({
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row?.TRAN_SEQ_NO);
+                  const isItemSelected = isSelected(row?.SR_NO?row?.SR_NO:row?.TRAN_SEQ_NO);
                   const labelId = `enhanced-table-checkbox-${index}`;
                   return (
                     <TableRow
@@ -79,13 +87,13 @@ const CommonTable = ({
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row?.TRAN_SEQ_NO}
+                      key={row?.SR_NO?row?.SR_NO:row?.TRAN_SEQ_NO}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox
                           color="primary"
-                          onClick={(event) => handleClick(event, row?.TRAN_SEQ_NO)}
+                          onClick={(event) => handleClick(event, row?.SR_NO?row?.SR_NO:row?.TRAN_SEQ_NO)}
                           checked={isItemSelected}
                           inputProps={{
                             "aria-labelledby": labelId,
@@ -96,10 +104,14 @@ const CommonTable = ({
                         />
                       </TableCell>
                       { editRows?.includes(row?.TRAN_SEQ_NO) ? <>
-                        {Object.entries(row).map(([key, value]) => 
-                             <TableCell align="left" key={key}>
-                                       <TextField size='small' defaultValue={value} name={key} onChange={ (e) => onBlur(e, row)} />
-                                      </TableCell>       
+                        {Object.entries(row).map(([key, value]) => {
+                            return <TableCell padding="none" align="left" key={key}>
+                            <TextField 
+                            size="small"
+                            hide
+                            defaultValue={value} name={key} onChange={ (e) => onBlur(e, row)} />
+                           </TableCell>
+                              }
                       )}
                       {/* <TableCell align="left">
                         {row?.TRAN_SEQ_NO || "NULL"}
@@ -149,7 +161,7 @@ const CommonTable = ({
                       </> :           
                       <>
                       {Object.entries(row).map(([key, value])=> 
-                          <TableCell align="left" key={key}>
+                          <TableCell align="left" key={key} className={rowClasses.tabCell}>
                               {value || "NULL" }
                           </TableCell>
                       )}

@@ -37,18 +37,19 @@ export default function EnhancedTableToolbar(props) {
       )}
       {selected.length > 0 && (
         <>
-        {(edithandle === true) &&
+        {(edithandle === true) ?
           <Tooltip title="Edit">
           <IconButton onClick={() => seteditRows(selected)}>
             <EditIcon />
           </IconButton>
         </Tooltip> 
-        }  
-      <Tooltip title="Delete">
-          <IconButton onClick={() => handledelete(selected)}>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
+        :  <Tooltip title="Delete">
+       <IconButton onClick={() => handledelete(selected)}>
+          <DeleteIcon />
+        </IconButton>
+      </Tooltip>
+      }   
+      
         </>
       )}
     </Toolbar>

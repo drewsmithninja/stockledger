@@ -60,7 +60,7 @@ const ErrorProcessingReducers = (state = initialState, action) => {
           ...state,
           isLoading: false,
           isError: true,
-          messgae: action.payload,
+          messgae: action.payload?.Data?.message,
           isSuccess: false,
         };
 

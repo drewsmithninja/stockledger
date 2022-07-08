@@ -20,6 +20,27 @@ export const headCells = [
     label: "ITEM",
     width: "100%",
   },
+  // {
+  //   id: "DEPT",
+  //   numeric: false,
+  //   disablePadding: true,
+  //   label: "DEPT",
+  //   width: "100%",
+  // },
+  // {
+  //   id: "CLASS",
+  //   numeric: false,
+  //   disablePadding: true,
+  //   label: "CLASS",
+  //   width: "100%",
+  // },
+  // {
+  //   id: "SUBCLASS",
+  //   numeric: false,
+  //   disablePadding: true,
+  //   label: "SUBCLASS",
+  //   width: "100%",
+  // },
   {
     id: "REF_ITEM",
     numeric: true,

@@ -11,11 +11,12 @@ import { API } from "../../services/api";
 
 function* fetchDataSaga(action) {
   try {
-    const response = yield call(axiosCall, "GET", API.FETCHERRORDATA);
-    if (response?.status == 200) {
-      yield put(getErrorProcessingListSuccess({ Data: response?.data }));
+    const response = yield call(axiosCall, "POST", API.FETCHERRORDATA,action.payload);
+    console.log(response);
+    if (response?.data?.status == 500) {
+      yield put(getErrorProcessingError({Data: response?.data}));
     } else {
-      yield put(getErrorProcessingError(response?.data?.message));
+      yield put(getErrorProcessingListSuccess({ Data: response?.data }));
     }
   } catch (e) {
     yield put(getErrorProcessingError(e.message));

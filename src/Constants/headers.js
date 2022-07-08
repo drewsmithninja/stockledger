@@ -1,6 +1,5 @@
 export const stageHeaders = [
-"TRAN_SEQ_NO",
-"PROCESS_IND",
+"SR_NO",
 "ITEM",
 "REF_ITEM",
 "REF_ITEM_TYPE",
