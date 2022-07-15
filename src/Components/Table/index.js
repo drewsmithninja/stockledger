@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import CommonTable from "./commonTable/index";
+import TableToolbar from "../Table/Toolbar/index";
+import DeleteIcon from '@mui/icons-material/Delete';
+import Button from "@mui/material/Button";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -32,7 +35,6 @@ function stableSort(array, comparator) {
 
 export default function EnhancedTable({
   tableData,
-  handleDelete,
   handleSearch,
   searchText,
   handleEdit,
@@ -40,6 +42,8 @@ export default function EnhancedTable({
   editRows,
   setUpdateRow,
   headCells,
+  setTabledata,
+  pageName,
 }) {
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("");
@@ -88,6 +92,16 @@ export default function EnhancedTable({
     }
   };
 
+  const handleDelete = () => {
+    const id = selected;
+    const data = [...tableData];
+    const updatedTable = data.filter((val) => {
+      return !id.includes(val.SR_NO);
+    });
+    setTabledata(updatedTable);
+    setSelected([]);
+  };
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -104,14 +118,17 @@ export default function EnhancedTable({
 
   return (
     <>
-      <Box sx={{ width: "100%", marginTop: "8px" }}>
+    {(selected && pageName == "stage") && 
+    <Button variant="contained" onClick={handleDelete} startIcon={<DeleteIcon />} sx={{position:"fixed",top:"72px", zIndex:"99",right:"215px"}} >
+    Delete</Button>
+    }
+     <Box sx={{ width: "100%", marginTop: "8px" }}>
         <CommonTable
           handleClick={handleClick}
           handleSelectAllClick={handleSelectAllClick}
           handleRequestSort={handleRequestSort}
           handleChangePage={handleChangePage}
           isSelected={isSelected}
-          handleDelete={handleDelete}
           handleSearch={handleSearch}
           searchText={searchText}
           handleEdit={handleEdit}
@@ -129,6 +146,7 @@ export default function EnhancedTable({
           rowsPerPage={rowsPerPage}
           emptyRows={emptyRows}
           handleChangeRowsPerPage={handleChangeRowsPerPage}
+          pageName={pageName}
         />
       </Box>
     </>

@@ -3,12 +3,13 @@ import Header from "../Header";
 import {Table, TableBody, TableCell, TableContainer, TablePagination, TableRow,Paper, Checkbox, TextField } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import TableToolbar from "../Toolbar/index";
+import "../index.css";
 
 const useStyles = makeStyles({
   tabCell: {
-      padding: "6px 6px !important",
-      fontSize: "0.8rem !important",
-  },
+    padding: "6px 6px !important",
+    fontSize: "0.7rem !important",
+},
 });
 
 const CommonTable = ({
@@ -35,6 +36,7 @@ const CommonTable = ({
   emptyRows,
   handleChangeRowsPerPage,
   headCells,
+  pageName,
 }) => {
 
 
@@ -49,7 +51,6 @@ const CommonTable = ({
   }
 
   useEffect(() => {
-    //console.log('updateData',updateData);
     if(setUpdateRow){
     setUpdateRow(updateData);
     }
@@ -58,7 +59,7 @@ const CommonTable = ({
   return (
     <>
       <Paper sx={{ width: "100%", mb: 2 }}>
-        <TableContainer>
+        <TableContainer sx={{ }}>
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
@@ -105,112 +106,22 @@ const CommonTable = ({
                       </TableCell>
                       { editRows?.includes(row?.TRAN_SEQ_NO) ? <>
                         {Object.entries(row).map(([key, value]) => {
-                            return <TableCell padding="none" align="left" key={key}>
+                            return <TableCell padding="none" align="left" key={key} className={rowClasses.tabCell}>
                             <TextField 
                             size="small"
+                            variant="standard"
                             hide
                             defaultValue={value} name={key} onChange={ (e) => onBlur(e, row)} />
                            </TableCell>
                               }
                       )}
-                      {/* <TableCell align="left">
-                        {row?.TRAN_SEQ_NO || "NULL"}
-                      </TableCell>
-                        <TableCell align="left">
-                          <TextField size='small' type='number' defaultValue={row?.ITEM} name='ITEM' onBlur={ (e) => onBlur(e, row)} />
-                      </TableCell>
-                      <TableCell align="left">
-                      <TextField size='small' defaultValue={row?.LOCATION} name='LOCATION' onBlur={ (e) => onBlur(e, row)} />
-                      </TableCell>
-                      <TableCell align="left">
-                        <TextField size='small' defaultValue={row?.TRN_DATE} name='TRN_DATE' onBlur={ (e) => onBlur(e, row)} />
-                      </TableCell>
-                      <TableCell align="left">
-                        <TextField size='small' defaultValue={row?.TRN_TYPE} name='TRN_TYPE' onBlur={ (e) => onBlur(e, row)} />
-                      </TableCell>
-                      <TableCell align="left">
-                        <TextField size='small' defaultValue={row?.QTY} name='QTY' onBlur={ (e) => onBlur(e, row)} />
-                      </TableCell>
-                      <TableCell align="left">
-                        <TextField size='small' defaultValue={row?.UNIT_COST} name='UNIT_COST' onBlur={ (e) => onBlur(e, row)} />
-                      </TableCell>
-                      <TableCell align="left">
-                        <TextField size='small' defaultValue={row?.UNIT_RETAIL} name='UNIT_RETAIL' onBlur={ (e) => onBlur(e, row)} />
-                      </TableCell>
-                      <TableCell align="left">
-                        <TextField size='small' defaultValue={row?.TOTAL_COST} name='TOTAL_COST' onBlur={ (e) => onBlur(e, row)} />
-                      </TableCell>
-                      <TableCell align="left">
-                        <TextField size='small' defaultValue={row?.TOTAL_RETAIL} name='TOTAL_RETAIL' onBlur={ (e) => onBlur(e, row)} />
-                      </TableCell>
-                      <TableCell align="left">
-                        <TextField size='small' defaultValue={row?.REF_NO1} name='REF_NO1' onBlur={ (e) => onBlur(e, row)} />
-                      </TableCell>
-                      <TableCell align="left">
-                        <TextField size='small' defaultValue={row?.REF_NO2} name='REF_NO2' onBlur={ (e) => onBlur(e, row)} />
-                      </TableCell>
-                      <TableCell align="left">
-                        <TextField size='small' defaultValue={row?.REF_NO3} name='REF_NO3' onBlur={ (e) => onBlur(e, row)} />
-                      </TableCell>
-                      <TableCell align="left">
-                        <TextField size='small' defaultValue={row?.REF_NO4} name='REF_NO4' onBlur={ (e) => onBlur(e, row)} />
-                      </TableCell>
-                      <TableCell align="left">
-                        <TextField size='small' defaultValue={row?.CURRENCY} name='CURRENCY' onBlur={ (e) => onBlur(e, row)} />
-                      </TableCell> */}
                       </> :           
                       <>
                       {Object.entries(row).map(([key, value])=> 
-                          <TableCell align="left" key={key} className={rowClasses.tabCell}>
-                              {value || "NULL" }
+                          <TableCell align="left" key={key} className={rowClasses.tabCell} sx={(key == 'SR_NO'?'display:none':'')}>
+                              {value || "" }
                           </TableCell>
                       )}
-                      {/* <TableCell align="left">
-                        {row?.TRAN_SEQ_NO || "NULL"}
-                      </TableCell>
-                      <TableCell align="left">{row?.ITEM || "NULL"}</TableCell>
-                      <TableCell align="left">
-                        {row?.LOCATION || "NULL"}
-                      </TableCell>
-                      <TableCell align="left">
-                        {row?.TRN_DATE || "NULL"}
-                      </TableCell>
-                      <TableCell align="left">
-                        {row?.TRN_TYPE || "NULL"}
-                      </TableCell>
-                      <TableCell align="left">{row?.QTY || "NULL"}</TableCell>
-                      <TableCell align="left">
-                        {row?.UNIT_COST || "NULL"}
-                      </TableCell>
-                      <TableCell align="left">
-                        {row?.UNIT_RETAIL || "NULL"}
-                      </TableCell>
-                      <TableCell align="left">
-                        {row?.TOTAL_COST || "NULL"}
-                      </TableCell>
-                      <TableCell align="left">
-                        {row?.TOTAL_RETAIL || "NULL"}
-                      </TableCell>
-                      <TableCell align="left">
-                        {row?.REF_NO1 || "NULL"}
-                      </TableCell>
-                      <TableCell align="left">
-                        {row?.REF_NO2 || "NULL"}
-                      </TableCell>
-                      <TableCell align="left">
-                        {row?.REF_NO3 || "NULL"}
-                      </TableCell>
-                      <TableCell align="left">
-                        {row?.REF_NO4 || "NULL"}
-                      </TableCell>
-                      <TableCell align="left">
-                        {row?.CURRENCY || "NULL"}
-                      </TableCell>
-                      {(row?.ERR_SEQ_NO) &&
-                      <TableCell align="left">
-                        {row?.ERR_SEQ_NO || "NULL"}
-                      </TableCell>
-                      } */}
                       </> }
                       
                     </TableRow>
@@ -238,8 +149,10 @@ const CommonTable = ({
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
-      </Paper>
-      <TableToolbar selected={selected} handledelete={handleDelete} edithandle={handleEdit} seteditRows={seteditRows}  />
+        {(pageName != "stage") &&
+        <TableToolbar selected={selected} handledelete={handleDelete} edithandle={handleEdit} seteditRows={seteditRows}  />
+        }         
+        </Paper>
     </>
   );
 };

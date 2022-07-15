@@ -18,7 +18,7 @@ const SearchTableData = ({
         className="form-control"
         placeholder={placeholder}
         onChange={onChange}
-        style={{ padding: "7px 0px", width: width, outline: "none" }}
+        style={{ width: width }}
       />
     </div>
   );

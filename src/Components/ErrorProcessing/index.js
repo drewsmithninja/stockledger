@@ -8,12 +8,18 @@ import Stack from "@mui/material/Stack";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import Modal from '@mui/material/Modal';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import { makeStyles } from "@mui/styles";
 import { getErrorProcessingRequest, postErrorProcessingRequest } from "../../Redux/Action/errorProcessing";
 import CircularProgress from "@mui/material/CircularProgress";
 import { headCells } from "./tableHead";
+import SearchIcon from '@mui/icons-material/Search';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import SendIcon from '@mui/icons-material/Send';
+//import "./index.css";
 
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -75,11 +81,11 @@ const ErrorProcessing = () => {
   const [isError, setIsError] = useState(false)
   const [isSubmit, setSubmit] = useState(false);
   const [open, setOpen] = useState(false);
-  const StageProceesClasses = useStyles();
+  const ErrorProceesClasses = useStyles();
   const ErrorProcessingData = useSelector(
     (state) => state.ErrorProcessingReducers
   );
-  console.log(ErrorProcessingData);
+  //console.log(ErrorProcessingData);
   const dispatch = useDispatch();
   let today = new Date().toISOString().slice(0, 10);
 
@@ -120,6 +126,7 @@ useEffect(() => {
 
   useEffect(() => {
         if(ErrorProcessingData?.data?.Data && Array.isArray(ErrorProcessingData?.data?.Data)){
+          console.log(ErrorProcessingData?.data?.Data);
           setTabledata(ErrorProcessingData?.data?.Data)
           setAllData(ErrorProcessingData?.data?.Data);
           setLoading(false);
@@ -147,36 +154,19 @@ useEffect(() => {
     }
   };
 
-
-  // const handleDelete = (id) => {
-  //   const data = [...tabledata];
-  //   // const deleteid = id.reduce(function(target, key, index) {
-  //   //     target['TRAN_SEQ_NO'] = key;
-  //   //       return target;
-  //   //   }, {})
-  //   //   dispatch(postErrorProcessingRequest(deleteid));
-  //   const updatedTable = data.filter((val) => {
-  //     return !id.includes(val.TRAN_SEQ_NO);
-  //   });
-
-  //   setTabledata(updatedTable);
-  // };
   const SubmitList = () => {
     if(Object.keys(updateRow).length > 0){
-      console.log(updateRow);
     setLoading(true);
     dispatch(postErrorProcessingRequest(Object.values(updateRow)));
     setSubmit(true);
     }else{
-      console.log("out in");
+
       setOpen(true)
     }
-    //window.location.reload();
     
   };
 const handleSubmit = (event) => {
   event.preventDefault();
-    //console.log(searchData);
     setSearch(true);
 }
 
@@ -200,13 +190,57 @@ const onReset = (event) => {
       setTabledata("");
 }
 
+
+let newTabledata;
+  if(tabledata.length > 0){
+   newTabledata =  tabledata.map( item => {
+        const reorder = {
+          'ITEM' : null,
+          'ITEM_DESC': null,
+          'DEPT': null,
+          'CLASS': null,
+          'SUBCLASS':null,
+          'REF_ITEM': null,
+          'REF_ITEM_TYPE': null,
+          'LOCATION_TYPE': null,
+          'LOCATION': null,
+          'LOCATION_NAME': "",
+          'TRN_DATE': "",
+          'TRN_TYPE': "",
+          'QTY': "",
+          'PACK_QTY': "",
+          'PACK_COST': "",
+          'PACK_RETAIL': "",
+          'UNIT_COST': "",
+          'UNIT_RETAIL': "",
+          'TOTAL_COST': "",
+          'TOTAL_RETAIL': "",
+          'REF_NO1': "",
+          'REF_NO2': "",
+          'REF_NO3': "",
+          'REF_NO4': "",
+          'CURRENCY': "",
+          'CREATE_ID': "",
+          'CREATE_DATETIME': "",
+          'REV_NO': "",
+          'REV_TRN_NO': "",
+          'ERR_MSG': null,
+          'ERR_SEQ_NO': null,
+          'TRAN_SEQ_NO': null,
+        }
+        delete item?.PROCESS_IND;
+          let test = Object.assign(reorder,item);
+        return test;  
+  })
+}
+
   return (
-    <Box className={StageProceesClasses.maindiv}>
+    <Box className={ErrorProceesClasses.maindiv}>
       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         <Grid item xs={12}>
-          <Box className={StageProceesClasses.boxDiv}>
-            <div className={StageProceesClasses.uploaddiv}>
-              <h3>Error Processing Data</h3>
+          <Box className={ErrorProceesClasses.boxDiv}>
+            <div className={ErrorProceesClasses.uploaddiv}>
+              <h4>Error Processing Data</h4>
             </div>
           </Box>
         </Grid>
@@ -219,18 +253,18 @@ const onReset = (event) => {
             sx={{ mt: 1,display:'flex'}}
           > 
           <Grid item xs={9}>
-          {/* <TextField
-              className={StageProceesClasses.textField}
-              margin="normal"
-              label="DEPT"
-              name="DEPT"
-              type="text"
-              value={searchData.DEPT}
-              onChange={onChange}
-              autoFocus
-            />
+          {/* <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value="20"
+            label="Age"
+          >
+            <MenuItem value={10}>Ten</MenuItem>
+            <MenuItem value={20}>Twenty</MenuItem>
+            <MenuItem value={30}>Thirty</MenuItem>
+            </Select>
             <TextField
-              className={StageProceesClasses.textField}
+              className={ErrorProceesClasses.textField}
               margin="normal"
               label="CLASS"
               name="CLASS"
@@ -240,7 +274,7 @@ const onReset = (event) => {
               autoFocus
             />
             <TextField
-              className={StageProceesClasses.textField}
+              className={ErrorProceesClasses.textField}
               margin="normal"
               label="SUBCLASS"
               name="SUBCLASS"
@@ -250,7 +284,7 @@ const onReset = (event) => {
               autoFocus
             /> */}
             <TextField
-              className={StageProceesClasses.textField}
+              className={ErrorProceesClasses.textField}
               margin="normal"
               label="ITEM"
               name="ITEM"
@@ -260,7 +294,7 @@ const onReset = (event) => {
               autoFocus
             />
             <TextField
-              className={StageProceesClasses.textField}
+              className={ErrorProceesClasses.textField}
               margin="normal"
               name="LOCATION"
               label="Location"
@@ -269,7 +303,7 @@ const onReset = (event) => {
               onChange={onChange}
             />
             <TextField
-              className={StageProceesClasses.textField}
+              className={ErrorProceesClasses.textField}
               margin="normal"
               name="TRN_TYPE"
               label="TRN TYPE"
@@ -278,7 +312,7 @@ const onReset = (event) => {
               onChange={onChange}
             />
             <TextField
-              className={StageProceesClasses.textField}
+              className={ErrorProceesClasses.textField}
               margin="normal"
               name="ERR_MSG"
               label="ERR MESSAGE"
@@ -287,7 +321,7 @@ const onReset = (event) => {
               onChange={onChange}
             />
             <TextField
-              className={StageProceesClasses.textField}
+              className={ErrorProceesClasses.textField}
               margin="normal"
               name="CREATE_ID"
               label="CREATE ID"
@@ -296,12 +330,12 @@ const onReset = (event) => {
               onChange={onChange}
             />
              <TextField
-              className={StageProceesClasses.textField}
+              className={ErrorProceesClasses.textField}
               margin="normal"
               name="TRN_DATE"
               label="TRN DATE"
               type="date"
-              inputProps={{ max:"2022-07-07"}}
+              inputProps={{ max:"2022-07-11"}}
               value={searchData.TRN_DATE}
               onChange={onChange}
               InputLabelProps={{
@@ -312,10 +346,11 @@ const onReset = (event) => {
             <Grid item xs={1}></Grid>
             <Grid item xs={2}>
             <Button
-              className={StageProceesClasses.textField}
+              className={ErrorProceesClasses.textField}
               type="submit"
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              startIcon={<SearchIcon />}
             >
               Search
             </Button>
@@ -323,6 +358,7 @@ const onReset = (event) => {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
               onClick={onReset}
+              startIcon={<RestartAltIcon />}
             >
               Reset
             </Button>
@@ -335,7 +371,7 @@ const onReset = (event) => {
                 ) : (
         tabledata &&
         <Table
-          tableData={tabledata}
+          tableData={newTabledata}
           //handleDelete={handleDelete}
           handleSearch={handleChange}
           searchText={inputValue}
@@ -357,7 +393,7 @@ const onReset = (event) => {
               justifyContent="flex-end"
               alignItems="flex-end"
             >
-              <Button variant="contained" onClick={SubmitList}>
+              <Button variant="contained" onClick={SubmitList} startIcon={<SendIcon />}>
               {loading ? (
                   <CircularProgress color="inherit" />
                 ) : (
@@ -386,7 +422,7 @@ const onReset = (event) => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box className={StageProceesClasses.popUp}>
+        <Box className={ErrorProceesClasses.popUp}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
             Note:-
           </Typography>
@@ -400,4 +436,3 @@ const onReset = (event) => {
 };
 
 export default ErrorProcessing;
-

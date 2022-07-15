@@ -14,6 +14,7 @@ const useStyles = makeStyles({
   TableCell: {
     color: "#fff",
     padding: "6px 6px !important",
+    lineHeight: "1.2rem !important",
   },
 });
 
@@ -36,27 +37,6 @@ export default function EnhancedTableHead(props) {
   const headerclasses = useStyles();
   return (
     <>
-      <TableHead>
-        <TableCell padding="checkbox"></TableCell>
-        {headCells.map((searchData, index) => (
-          <>
-            <TableCell className={headerclasses.TableCell}>
-              <SearchTableData
-                type="search"
-                name={searchData.id}
-                placeholder={searchData.label}
-                value={
-                  searchText && searchText[searchData.id]
-                    ? searchText[searchData.id]
-                    : ""
-                }
-                width={searchData.width}
-                onChange={handleSearch}
-              />
-            </TableCell>
-          </>
-        ))}
-      </TableHead>
       <TableHead>
         <TableRow>
           <TableCell padding="checkbox">
@@ -88,6 +68,7 @@ export default function EnhancedTableHead(props) {
                   sx={{
                     "&.MuiTableSortLabel-root": {
                       color: "white",
+                      fontSize: "0.775rem",
                     },
                     "&.MuiTableSortLabel-root:hover": {
                       color: "#fff",
@@ -113,6 +94,27 @@ export default function EnhancedTableHead(props) {
             </>
           ))}
         </TableRow>
+      </TableHead>
+      <TableHead className={headerclasses.SearchHead}>
+        <TableCell padding="checkbox"></TableCell>
+        {headCells.map((searchData, index) => (
+          <>
+            <TableCell className={headerclasses.TableCell}>
+              <SearchTableData
+                type="search"
+                name={searchData.id}
+                placeholder={searchData.label}
+                value={
+                  searchText && searchText[searchData.id]
+                    ? searchText[searchData.id]
+                    : ""
+                }
+                width={searchData.width}
+                onChange={handleSearch}
+              />
+            </TableCell>
+          </>
+        ))}
       </TableHead>
     </>
   );

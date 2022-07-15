@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
@@ -27,7 +28,7 @@ import { GetItems } from "../../Constants/menu";
 import { makeStyles } from "@mui/styles";
 import { Typography } from "@mui/material";
 
-const drawerWidth = 290;
+const drawerWidth = 0;
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
@@ -177,7 +178,9 @@ export default function Index() {
               >
                 <MenuIcon sx={{color:"#66cdaa"}}/>
               </IconButton>
-              <img src={proxima360} className={Layoutclasses.ImageDiv} />
+              <Link to="/dashboard" >
+                  <img src={proxima360} className={Layoutclasses.ImageDiv} />
+              </Link>
             </div>
             <div>
               <UserProfile/>
