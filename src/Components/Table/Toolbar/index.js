@@ -8,9 +8,11 @@ import Typography from "@mui/material/Typography";
 import { alpha } from "@mui/material/styles";
 import Toolbar from "@mui/material/Toolbar";
 import EditIcon from '@mui/icons-material/Edit';
+import CancelIcon from '@mui/icons-material/Cancel';
+import { Button } from "@mui/material";
 
 export default function EnhancedTableToolbar(props) {
-  const { selected, handledelete, edithandle, seteditRows } = props;
+  const { selected, handledelete, edithandle, seteditRows, setSelected, editRows = [] } = props;
   return (
     <Toolbar
       sx={{
@@ -37,20 +39,13 @@ export default function EnhancedTableToolbar(props) {
       )}
       {selected.length > 0 && (
         <>
-        {(edithandle === true) ?
-          <Tooltip title="Edit">
-          <IconButton onClick={() => seteditRows(selected)}>
-            <EditIcon />
-          </IconButton>
-        </Tooltip> 
-        :  <Tooltip title="Delete">
-       <IconButton onClick={() => handledelete(selected)}>
-          <DeleteIcon />
-        </IconButton>
-      </Tooltip>
-      }   
-      
-        </>
+        {(edithandle === true && editRows.length == 0) ?
+        <Button size="small" variant="contained" onClick={() => seteditRows(selected)}startIcon={<EditIcon />}>EDIT</Button>
+        :<> <Button size="small" variant="contained" onClick={() => {setSelected([]);seteditRows([]);}} startIcon={<CancelIcon />}>CANCEL</Button>
+         {/* <Button size="small" variant="contained" onClick={() => {setSelected([]);seteditRows([]);}}startIcon={<EditIcon />}>Save</Button>  */}
+        </>    
+      }     
+      </>
       )}
     </Toolbar>
   );

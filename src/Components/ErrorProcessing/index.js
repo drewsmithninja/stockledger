@@ -8,19 +8,22 @@ import Stack from "@mui/material/Stack";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import Modal from '@mui/material/Modal';
-import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Autocomplete from '@mui/material/Autocomplete';
+import IconButton from "@mui/material/IconButton";
+import FormControl from "@mui/material/FormControl";
 import Typography from '@mui/material/Typography';
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
+import Drawer from "@mui/material/Drawer";
 import { makeStyles } from "@mui/styles";
-import { getErrorProcessingRequest, postErrorProcessingRequest } from "../../Redux/Action/errorProcessing";
+import { getErrorProcessingRequest, postErrorProcessingRequest, getClassDataRequest, getLocationDataRequest } from "../../Redux/Action/errorProcessing";
 import CircularProgress from "@mui/material/CircularProgress";
 import { headCells } from "./tableHead";
 import SearchIcon from '@mui/icons-material/Search';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import SendIcon from '@mui/icons-material/Send';
+import { trnType } from "./transType.js";
+import { errorList } from "./errorType.js"; 
 //import "./index.css";
-
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -28,9 +31,21 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 const useStyles = makeStyles({
   maindiv: {
     position: "relative",
-    width: "calc(95vw - 64px)",
-  },
-  boxDiv: {
+    width: "calc(95vw - 0px)",
+    '& table':{
+      '& tr':{
+            '& td:nth-child(28)':{
+                  display: 'none'
+            },
+            '& td:nth-child(29)':{
+              display: 'none'
+           },
+           '& td:nth-child(30)':{
+             display: 'none'
+          }
+      }
+  }
+},  boxDiv: {
     textAlign: "initial",
     position: "relative",
     maxWidth: "1400px",
@@ -48,6 +63,11 @@ const useStyles = makeStyles({
   textField: {
     marginRight: "10px !important",
   },
+  dateField:{
+      '&.MuiOutlinedInput-root': {
+        color:  "grey",
+      }
+  },
   popUp: {
     position: 'absolute',
     top: '50%',
@@ -62,41 +82,133 @@ const useStyles = makeStyles({
 });
 
 const initialsearch = {
-  ITEM: "",
-  LOCATION: "",
-  TRN_TYPE: "",
+  DEPT: [],
+  CLASS: [],
+  SUBCLASS: [],
+  ITEM: [],
+  LOCATION: [],
+  TRN_TYPE: [],
+  AREF: [],
+  ERR_MSG: [],
+  CREATE_ID: JSON.parse(localStorage.getItem("userData"))?.username,
   TRN_DATE: "",
-  ERR_MSG: "",
-  CREATE_ID: ""
 }
+
+const initialItemData = {
+  DEPT: "",
+  CLASS: "",
+  SUBCLASS: "",
+  ITEM: ""
+}
+
+
 const ErrorProcessing = () => {
   const [tabledata, setTabledata] = useState("");
   const [inputValue, setInputValue] = useState();
   const [allData, setAllData] = useState("");
   const [editRows, seteditRows] = useState([]);
   const [updateRow, setUpdateRow] =  useState([]);
+  const [itemData, setItemData] = useState(initialItemData);
+  const [origItemData, setOrigItemData ] = useState({});
+  const [filterClass, setFilterClass] = useState([]);
+  const [subfilterClass, setsubFilterClass] = useState([]);
+  const [filterItem, setFilterItem] = useState([]);
+  const [locationData, setLocationData] = useState([{}]);
   const [loading, setLoading] = useState(false);
   const [isSearch, setSearch] = useState(false);
   const [searchData, setSearchData] = useState(initialsearch);
   const [isError, setIsError] = useState(false)
   const [isSubmit, setSubmit] = useState(false);
   const [open, setOpen] = useState(false);
+  const [state, setState] = React.useState({
+    top: false,
+    left: false,
+    bottom: false,
+    right: false,
+  });
   const ErrorProceesClasses = useStyles();
   const ErrorProcessingData = useSelector(
     (state) => state.ErrorProcessingReducers
   );
-  //console.log(ErrorProcessingData);
+  console.log(ErrorProcessingData);
   const dispatch = useDispatch();
-  let today = new Date().toISOString().slice(0, 10);
+
+  const toggleDrawer = (anchor, open) => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    setState({ ...state, [anchor]: open });
+  };
+
+  const serializedata = (datatable) => {
+    let newTabledata = [];
+    if(datatable.length > 0){
+      datatable.map( item => {
+          const reorder = {
+            'ITEM' : null,
+            'ERR_MSG': null,
+            'ITEM_DESC': null,
+            'DEPT': null,
+            'DEPT_DESC': null,
+            'CLASS': null,
+            'CLASS_DESC': null,
+            'SUBCLASS':null,
+            'SUBCLASS_DESC': null,
+            'LOCATION_TYPE': null,
+            'LOCATION': null,
+            'LOCATION_NAME': "",
+            'TRN_DATE': "",
+            'TRN_NAME': "",
+            'QTY': "",
+            'UNIT_COST': "",
+            'UNIT_RETAIL': "",
+            'TOTAL_COST': "",
+            'TOTAL_RETAIL': "",
+            'REF_NO1': "",
+            'REF_NO2': "",
+            'REF_NO3': "",
+            'REF_NO4': "",
+            'CURRENCY': "",
+            'ERR_SEQ_NO': null,
+            'TRAN_SEQ_NO': null,
+            'TRN_TYPE': "",
+            'AREF': null,
+          }
+          parseFloat(item.LOCATION?.toFixed(1));
+          delete item?.PROCESS_IND;
+          delete item?.SELLING_UOM;
+          delete item?.TRN_POST_DATE;
+          delete item?.REF_ITEM;
+          delete item?.REF_ITEM_TYPE;
+          delete item?.PACK_QTY;
+          delete item?.PACK_COST;
+          delete item?.PACK_RETAIL;
+          delete item?.CREATE_ID;
+          delete item?.CREATE_DATETIME;
+          delete item?.REV_NO;
+          delete item?.REV_TRN_NO;
+            let test = Object.assign(reorder,item);
+            newTabledata.push(test); 
+    })
+    return newTabledata;
+  } 
+  }
 
   useEffect(() => {
     if (inputValue) {
-      const filteredTable = tabledata.filter((val) =>
-        val[Object.keys(inputValue)[0]]
-          ?.toString()
-          .toLowerCase()
-          .includes(Object.values(inputValue)[0]?.toString().toLowerCase())
-      );
+      // const filteredTable = tabledata.filter((val) =>
+      //   val[Object.keys(inputValue)[0]]
+      //     ?.toString()
+      //     .toLowerCase()
+      //     .includes(Object.values(inputValue)[0]?.toString().toLowerCase())
+      // );
+      const filteredTable = tabledata.filter(props => 
+        Object
+          .entries(inputValue)
+          .every(([key,val]) => 
+            !val.length ||
+            props[key]?.toString().toLowerCase().includes(val?.toString().toLowerCase()))
+      )
       setTabledata(filteredTable);
     }
   }, [inputValue]);
@@ -121,18 +233,29 @@ useEffect(() => {
   if(isSearch){
     dispatch(getErrorProcessingRequest([searchData])) 
   }
-
 },[isSearch])
+
+useEffect(()=> {
+  setLoading(true);
+  dispatch(getClassDataRequest([{}]));
+  dispatch(getLocationDataRequest([{}]));
+},[''])
 
   useEffect(() => {
         if(ErrorProcessingData?.data?.Data && Array.isArray(ErrorProcessingData?.data?.Data)){
-          console.log(ErrorProcessingData?.data?.Data);
-          setTabledata(ErrorProcessingData?.data?.Data)
-          setAllData(ErrorProcessingData?.data?.Data);
+          setTabledata(serializedata(ErrorProcessingData?.data?.Data));
+          setAllData(serializedata(ErrorProcessingData?.data?.Data));
           setLoading(false);
           setSubmit(false);
           setSearch(false)
-        }else{
+        }else if(ErrorProcessingData?.data?.itemData && Array.isArray(ErrorProcessingData?.data?.itemData)){
+          setItemData(ErrorProcessingData?.data?.itemData);
+          setOrigItemData(ErrorProcessingData?.data?.itemData);
+          setLoading(false);
+        }else if(ErrorProcessingData?.data?.locationData && Array.isArray(ErrorProcessingData?.data?.locationData)){
+          setLocationData(ErrorProcessingData?.data?.locationData);
+          setLoading(false);
+        }else {
           setSearch(false)
         }
         
@@ -143,24 +266,27 @@ useEffect(() => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (value == "") {
-      setInputValue({
-        [name]: value,
-      });
+      setInputValue(prevState => ({
+        ...prevState,
+        [name]: value
+    }));
       setTabledata(allData);
     } else {
-      setInputValue({
-        [name]: value,
-      });
+      setInputValue(prevState => ({
+        ...prevState,
+        [name]: value
+    }));
     }
   };
 
   const SubmitList = () => {
+    console.log(updateRow);
     if(Object.keys(updateRow).length > 0){
     setLoading(true);
     dispatch(postErrorProcessingRequest(Object.values(updateRow)));
     setSubmit(true);
+    seteditRows([]);
     }else{
-
       setOpen(true)
     }
     
@@ -168,6 +294,7 @@ useEffect(() => {
 const handleSubmit = (event) => {
   event.preventDefault();
     setSearch(true);
+    setState({ ...state, 'right': open });
 }
 
 const onChange = (e) => {
@@ -184,194 +311,434 @@ const handleMsgClose = () => {
 }
 
 const onReset = (event) => {
-    event.preventDefault();
+
+    initialsearch.DEPT = "";
+    initialsearch.CLASS = "";
+    initialsearch.SUBCLASS = "";
+    initialsearch.ITEM = "";
+    initialsearch.LOCATION = "";
+    initialsearch.TRN_TYPE= "";
+    initialsearch.TRN_DATE= "";
+    initialsearch.AREF ="";
+    initialsearch.ERR_MSG= "";
+    initialsearch.CREATE_ID= "";
+    console.log('datainitial',initialsearch);
       setSearchData(initialsearch)
+      setFilterClass([]);
+      setsubFilterClass([]);
+      setFilterItem([]);
+
+      
+      console.log('data',searchData);
       setSearch(false);
       setTabledata("");
+
 }
 
+const selectDept = (event, value) => {
+  console.log(value);
+  if(value.length > 0){
+    const filterClass = itemData.filter((item) => value.includes(item.DEPT));
+    const classFilter = (filterClass.length > 0 )?[...new Set(filterClass.map(item => item.CLASS))]:[];
+    setFilterClass(classFilter);
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        DEPT : value
+      };
+    });
 
-let newTabledata;
-  if(tabledata.length > 0){
-   newTabledata =  tabledata.map( item => {
-        const reorder = {
-          'ITEM' : null,
-          'ITEM_DESC': null,
-          'DEPT': null,
-          'CLASS': null,
-          'SUBCLASS':null,
-          'REF_ITEM': null,
-          'REF_ITEM_TYPE': null,
-          'LOCATION_TYPE': null,
-          'LOCATION': null,
-          'LOCATION_NAME': "",
-          'TRN_DATE': "",
-          'TRN_TYPE': "",
-          'QTY': "",
-          'PACK_QTY': "",
-          'PACK_COST': "",
-          'PACK_RETAIL': "",
-          'UNIT_COST': "",
-          'UNIT_RETAIL': "",
-          'TOTAL_COST': "",
-          'TOTAL_RETAIL': "",
-          'REF_NO1': "",
-          'REF_NO2': "",
-          'REF_NO3': "",
-          'REF_NO4': "",
-          'CURRENCY': "",
-          'CREATE_ID': "",
-          'CREATE_DATETIME': "",
-          'REV_NO': "",
-          'REV_TRN_NO': "",
-          'ERR_MSG': null,
-          'ERR_SEQ_NO': null,
-          'TRAN_SEQ_NO': null,
-        }
-        delete item?.PROCESS_IND;
-          let test = Object.assign(reorder,item);
-        return test;  
-  })
+  }else{
+   setFilterClass([])
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        DEPT : []
+      };
+    });
+  }
 }
 
-  return (
-    <Box className={ErrorProceesClasses.maindiv}>
-      <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-        <Grid item xs={12}>
-          <Box className={ErrorProceesClasses.boxDiv}>
-            <div className={ErrorProceesClasses.uploaddiv}>
-              <h4>Error Processing Data</h4>
-            </div>
-          </Box>
-        </Grid>
-      </Grid>
-      <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-      <Grid item xs={12}>
-      <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{ mt: 1,display:'flex'}}
-          > 
-          <Grid item xs={9}>
-          {/* <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value="20"
-            label="Age"
-          >
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-            <TextField
-              className={ErrorProceesClasses.textField}
-              margin="normal"
-              label="CLASS"
-              name="CLASS"
-              type="text"
-              value={searchData.CLASS}
-              onChange={onChange}
-              autoFocus
+const selectClass = (event,value) => {
+  console.log(searchData,value);
+
+  if(value.length > 0){
+    const filterSubClass = itemData.filter((item) => value.includes(item.CLASS));
+    const subclassFilter = (filterSubClass.length > 0 )?[...new Set(filterSubClass.map(item => item.SUBCLASS))]:[];
+   setsubFilterClass(subclassFilter)
+    console.log(subfilterClass);
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        CLASS : value
+      };
+    });
+
+  }else{
+    setsubFilterClass([])
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        CLASS : []
+      };
+    });
+  }
+}
+const selectSubClass = (event,value) => {
+  if(value.length > 0){
+    const filterItem = itemData.filter((item) => value.includes(item.SUBCLASS));
+    //const itemFilter = (filterItem.length > 0 )?[...new Set(filterItem.map(item => item.ITEM))]:[];
+   // console.log(itemFilter);
+    setFilterItem(filterItem)
+    console.log(filterItem);
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        SUBCLASS : value
+      };
+    });
+
+  }else{
+    setFilterItem([])
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        SUBCLASS : ""
+      };
+    });
+  }
+}
+
+const selectItem = (event, value) => {
+  let selectedItem = [];
+  if(value.length > 0){
+    value.map(
+      (item) => {
+          console.log(item.ITEM);
+          selectedItem.push(item.ITEM);
+      }
+    )
+
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        ITEM : selectedItem
+      };
+    });
+  }else{
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        ITEM : selectedItem
+      };
+    });
+  }
+}
+
+const uniqueDept = (itemData.length > 0 )?[...new Set(itemData.map(item => item.DEPT))]:[];
+
+const selectLocation = (event, value) => {
+  console.log(value);
+      let selectedLocation = [];
+      if(value.length > 0){
+        value.map(
+          (item) => {
+            selectedLocation.push(item.LOCATION);
+          }
+        )
+      setSearchData((prev) => {
+        return {
+          ...prev,
+          LOCATION : selectedLocation
+        };
+      });
+      }else{
+        initialsearch.LOCATION = '';
+        setSearchData((prev) => {
+          return {
+            ...prev,
+            LOCATION : []
+          };
+        });
+      }
+}
+
+const selectError = (event, value) => {
+  let selectedError = [];
+  if(value.length > 0){
+    value.map(
+      (item) => {
+          selectedError.push(item);
+      }
+    )
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        ERR_MSG : selectedError
+      };
+    });
+  }else{
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        ERR_MSG : []
+      };
+    });
+  }
+}
+ const selectTrantype = (event, value) => {
+   console.log(value);
+  let selectedTrantype = [];
+  let selectedAref = [];
+  if(value.length > 0){
+    value.map(
+      (item) => {
+        selectedTrantype.push(item.TRN_TYPE);
+        selectedAref.push(item.AREF)
+      }
+    )
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        TRN_TYPE : selectedTrantype,
+        AREF: selectedAref
+      };
+    });
+  }else{
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        TRN_TYPE : [],
+        AREF: []
+      };
+    });
+  }
+
+ }
+
+const searchPanel = () => (
+  <Box
+    sx={{ width: 350, marginTop: '80px'}}
+    role="presentation"
+    component="form"
+    onSubmit={handleSubmit}
+  > <Grid item xs={12} sx={{display:'flex', justifyContent:'center', marginTop: '15px'}}>
+         <Stack spacing={2} sx={{ width: 250 }}>
+          <Autocomplete
+              multiple
+              size="small"
+              id="combo-box-dept"
+              options={(uniqueDept.length > 0)?uniqueDept:''}
+              //value={(searchData?.DEPT.length > 0)?searchData?.DEPT:[]}
+              sx={{ width: 250 }}
+              onChange={selectDept} 
+              renderInput={(params) => <TextField {...params} label="DEPT" variant="standard" />}
+            />
+           
+            <Autocomplete
+              multiple
+              size="small"
+              id="combo-box-class"
+              options={(filterClass.length > 0)?filterClass:[]}
+             // value={(searchData?.CLASS.length > 0)?searchData?.CLASS:[]}
+              sx={{ width: 250 }}
+              onChange={selectClass} 
+              renderInput={(params) => <TextField {...params} label="CLASS" variant="standard" />}
+            />
+         
+            <Autocomplete
+              multiple
+              size="small"
+              id="combo-box-subclass"
+              options={(subfilterClass.length > 0)?subfilterClass:[]}
+             // value={(searchData?.SUBCLASS.length > 0)?searchData?.SUBCLASS:[]}
+              sx={{ width: 250 }}
+              onChange={selectSubClass} 
+              renderInput={(params) => <TextField {...params} label="SUBCLASS" variant="standard" />}
+            />
+  
+            <Autocomplete
+              multiple
+              size="small"
+              id="combo-box-item"
+              sx={{ width: 250 }}
+              options={(filterItem.length > 0)?filterItem:[]}
+              //value={(searchData?.ITEM.length > 0)?searchData?.ITEM:[]}
+              isOptionEqualToValue={(option, value) => option.ITEM === value.ITEM}
+              autoHighlight
+              onChange={selectItem}
+              getOptionLabel={(option) => option.ITEM.toString()}
+              renderOption={(props, option) => (
+                <Box component="li" {...props}>
+                  {option.ITEM} {option.ITEM_DESC}
+                </Box>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="standard" 
+                  label="Choose a ITEM"
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: 'new-password', // disable autocomplete and autofill
+                  }}
+                />
+              )}
+            />
+    
+            <Autocomplete
+              multiple
+              size="small"
+              id="combo-box-location"
+              sx={{ width: 250 }}
+              options={(locationData.length > 0)?locationData:[]}
+             // value={searchData.LOCATION}
+              autoHighlight
+              isOptionEqualToValue={(option, value) => option.LOCATION === value.LOCATION}
+              onChange={selectLocation}
+              getOptionLabel={(option) =>  option.LOCATION.toString()}
+              renderOption={(props, option) => (
+                <Box component="li" {...props}>
+                  {option.LOCATION} ({option.LOCATION_NAME})
+                </Box>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="standard" 
+                  label="Choose a Location"
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: 'new-password', // disable autocomplete and autofill
+                  }}
+                />
+              )}
+            />
+       
+            <Autocomplete
+              multiple
+              disablePortal
+              size="small"
+              id="combo-box-trn-type"
+             // value={(searchData?.TRN_TYPE.length > 0)?searchData?.TRN_TYPE:[]}
+              onChange={selectTrantype}
+              options={trnType}
+              getOptionLabel={(option) => option.TRN_NAME}
+              sx={{ width: 250 }}
+              renderInput={(params) => <TextField {...params} label="TRN TYPE" variant="standard" />}
+            />
+
+            <Autocomplete
+              multiple
+              disablePortal
+              size="small"
+              id="combo-box-err-type"
+            //  value={(searchData?.ERR_MSG.length > 0)?searchData?.ERR_MSG:[]}
+              options={(errorList.length > 0)?errorList:[]}
+              sx={{ width: 250 }}
+              onChange={selectError}
+              renderInput={(params) => <TextField {...params} label="ERR MESSAGE" variant="standard" />}
             />
             <TextField
               className={ErrorProceesClasses.textField}
+              disabled
               margin="normal"
-              label="SUBCLASS"
-              name="SUBCLASS"
-              type="text"
-              value={searchData.SUBCLASS}
-              onChange={onChange}
-              autoFocus
-            /> */}
-            <TextField
-              className={ErrorProceesClasses.textField}
-              margin="normal"
-              label="ITEM"
-              name="ITEM"
-              type="text"
-              value={searchData.ITEM}
-              onChange={onChange}
-              autoFocus
-            />
-            <TextField
-              className={ErrorProceesClasses.textField}
-              margin="normal"
-              name="LOCATION"
-              label="Location"
-              type="text"
-              value={searchData.LOCATION}
-              onChange={onChange}
-            />
-            <TextField
-              className={ErrorProceesClasses.textField}
-              margin="normal"
-              name="TRN_TYPE"
-              label="TRN TYPE"
-              type="text"
-              value={searchData.TRN_TYPE}
-              onChange={onChange}
-            />
-            <TextField
-              className={ErrorProceesClasses.textField}
-              margin="normal"
-              name="ERR_MSG"
-              label="ERR MESSAGE"
-              type="text"
-              value={searchData.ERR_MSG}
-              onChange={onChange}
-            />
-            <TextField
-              className={ErrorProceesClasses.textField}
-              margin="normal"
+              size="small"
+              variant="standard" 
               name="CREATE_ID"
               label="CREATE ID"
               type="text"
-              value={searchData.CREATE_ID}
-              onChange={onChange}
+              sx={{ width: 250 }}
+              value={JSON.parse(localStorage.getItem("userData"))?.username}
             />
              <TextField
-              className={ErrorProceesClasses.textField}
+              className={ErrorProceesClasses.dateField}
               margin="normal"
+              size="small"
+              variant="standard" 
               name="TRN_DATE"
               label="TRN DATE"
               type="date"
-              inputProps={{ max:"2022-07-11"}}
+              inputProps={{ max:"2022-07-22"}}
               value={searchData.TRN_DATE}
               onChange={onChange}
+              sx={{ width: 250 }}
+              style={{
+                color: "#D3D3D3",
+              }}
               InputLabelProps={{
                 shrink: true,
               }}
             />
-            </Grid>
-            <Grid item xs={1}></Grid>
-            <Grid item xs={2}>
+            <div>
             <Button
               className={ErrorProceesClasses.textField}
               type="submit"
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ width:'120px'}}
               startIcon={<SearchIcon />}
             >
               Search
             </Button>
             <Button
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ width:'120px'}}
               onClick={onReset}
               startIcon={<RestartAltIcon />}
             >
               Reset
             </Button>
+            </div>
+            </Stack>
             </Grid>
+  </Box>
+);
+
+  return (
+    <Box className={ErrorProceesClasses.maindiv}>
+      <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+        <Grid item xs={6}>
+          <Box className={ErrorProceesClasses.boxDiv}>
+            <div className={ErrorProceesClasses.uploaddiv}>
+              <h4>Error Processing Data</h4>
+            </div>
           </Box>
         </Grid>
+        <Grid item xs={6}>
+        <Box display="flex"
+              justifyContent="flex-end"
+              alignItems="flex-end" className={ErrorProceesClasses.boxDiv}>
+            <div className={ErrorProceesClasses.uploaddiv}>
+              {(Object.keys(updateRow).length > 0) && 
+            <Button variant="contained" sx={{marginTop: '15px'}} onClick={SubmitList} startIcon={<SendIcon />}>
+              {loading ? (
+                  <CircularProgress color="inherit" />
+                ) : (
+                  "Submit"
+                )}
+              </Button> 
+                  }
+       
+          <Button variant="contained" sx={{ marginTop: '15px', textAlign:'right' }} onClick={toggleDrawer('right', true)} startIcon={<SearchIcon />}>Search</Button>
+          <Drawer
+            anchor={'right'}
+            open={state['right']}
+            onClose={toggleDrawer('right', false)}
+            transitionDuration={700}
+          >
+            {searchPanel('right')}
+          </Drawer>
+       </div>
+          </Box>
         </Grid>
+      </Grid>
+
       {loading ? (
                   <CircularProgress color="inherit" />
                 ) : (
         tabledata &&
         <Table
-          tableData={newTabledata}
+          tableData={tabledata}
           //handleDelete={handleDelete}
           handleSearch={handleChange}
           searchText={inputValue}
@@ -382,28 +749,6 @@ let newTabledata;
           headCells={headCells}
         />
       )}
-      <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-        <Grid item xs={6}>
-        </Grid>
-        {
-          tabledata.length > 0 && <Grid item xs={6}>
-            <Box
-              m={1}
-              display="flex"
-              justifyContent="flex-end"
-              alignItems="flex-end"
-            >
-              <Button variant="contained" onClick={SubmitList} startIcon={<SendIcon />}>
-              {loading ? (
-                  <CircularProgress color="inherit" />
-                ) : (
-                  "Submit"
-                )}
-              </Button>
-            </Box>
-          </Grid>
-        }
-      </Grid>
 
       <Stack spacing={2} sx={{ width: "100%" }}>
         <Snackbar open={isError} autoHideDuration={3000} onClose={handleMsgClose}>
@@ -431,6 +776,7 @@ let newTabledata;
           </Typography>
         </Box>
       </Modal>
+
     </Box>
   );
 };

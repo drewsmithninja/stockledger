@@ -8,5 +8,5 @@ export const exceltoJsdate = (date) => {
   if (month.toString().length <= 1)
       month = '0' + month
   let year = date[2];
-  return String(month + '/' + day + '/' + year.slice(0, 4))
+  return String(year.slice(0, 4) + '-' + month + '-' + day)
 }

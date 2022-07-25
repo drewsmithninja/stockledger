@@ -4,7 +4,7 @@ export const headCells = [
     numeric: true,
     disablePadding: false,
     label: "ITEM",
-    width: "100%",
+    width: "90px",
   },
   {
     id: "LOC_TYPE",
@@ -18,7 +18,7 @@ export const headCells = [
     numeric: true,
     disablePadding: false,
     label: "LOC",
-    width: "100%",
+    width: "70px",
   },
   {
     id: "TRN_DATE",
@@ -39,7 +39,7 @@ export const headCells = [
     numeric: false,
     disablePadding: false,
     label: "QTY",
-    width: "100%",
+    width: "60px",
   },
   {
     id: "UNIT_COST",
@@ -82,19 +82,5 @@ export const headCells = [
     disablePadding: false,
     label: "REF NO4",
     width: "90px",
-  },
-  {
-    id: "CREATE_DATETIME",
-    numeric: false,
-    disablePadding: false,
-    label: "CREATE DATETIME",
-    width: "150px",
-  },
-  {
-    id: "CREATE_ID",
-    numeric: false,
-    disablePadding: false,
-    label: "CREATE ID",
-    width: "100px",
-  },
+  }
 ];

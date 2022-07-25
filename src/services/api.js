@@ -1,5 +1,7 @@
 export const API = {
   EXCELDATA: "/stg_trn_data/",
-  FETCHERRORDATA: "/post_err_trn_data/",
-  UPDATEERRORDATA: "/delete_err_trn/"
+  FETCHERRORDATA: "/err_trn_data_tab/",
+  UPDATEERRORDATA: "/delete_err_trn/",
+  GETCLASSDATA: "/lov_item_dtl/",
+  GETLOCATIONDATA: "/location_validation/",
 };

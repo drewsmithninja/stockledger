@@ -85,6 +85,8 @@ export default function EnhancedTable({
         selected.slice(selectedIndex + 1)
       );
     }
+    console.log(editRows);
+    console.log(newSelected);
     if(mode == 'delete'){
     setSelected(newSelected);
     }else{
@@ -113,13 +115,12 @@ export default function EnhancedTable({
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tableData.length) : 0;
-
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tableData.length) : 0;
+  
   return (
     <>
-    {(selected && pageName == "stage") && 
-    <Button variant="contained" onClick={handleDelete} startIcon={<DeleteIcon />} sx={{position:"fixed",top:"72px", zIndex:"99",right:"215px"}} >
+    {(selected.length > 0 && pageName == "stage") && 
+    <Button variant="contained" onClick={handleDelete} startIcon={<DeleteIcon />} sx={{position:"fixed",top:"75px", zIndex:"99",right:"215px"}} >
     Delete</Button>
     }
      <Box sx={{ width: "100%", marginTop: "8px" }}>
@@ -134,6 +135,7 @@ export default function EnhancedTable({
           handleEdit={handleEdit}
           rows={tableData}
           selected={selected}
+          setSelected ={setSelected}
           editRows={editRows}
           seteditRows={seteditRows}
           setUpdateRow={setUpdateRow}

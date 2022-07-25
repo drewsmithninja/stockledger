@@ -3,7 +3,11 @@ import {
   getErrorProcessingListSuccess,
   getErrorProcessingError,
   postErrorProcessingSucess,
-  postErrorProcessingError
+  postErrorProcessingError,
+  getClassDataSuccess,
+  getClassDataError,
+  getLocationDataSuccess,
+  getLocationDataError,
 } from "../Action/errorProcessing";
 import * as actions from "../constant";
 import axiosCall from "../../services/index";
@@ -12,7 +16,6 @@ import { API } from "../../services/api";
 function* fetchDataSaga(action) {
   try {
     const response = yield call(axiosCall, "POST", API.FETCHERRORDATA,action.payload);
-    console.log(response);
     if (response?.data?.status == 500) {
       yield put(getErrorProcessingError({Data: response?.data}));
     } else {
@@ -45,4 +48,38 @@ export function* updateErrorProcessing() {
   yield takeLatest(actions.POST_ERRORPROCESSING_REQUEST, updateDataSaga);
 }
 
+function* getClassDataSaga(action) {
+  try {
+    const response = yield call(axiosCall, "POST", API.GETCLASSDATA,action.payload);
+    //console.log(response);
+    if (response?.status == 200) {
+      yield put(getClassDataSuccess({ itemData: response?.data }));
+    } else {
+      yield put(getClassDataError(response?.data?.message));
+    }
+  } catch (e) {
+    yield put(getClassDataError(e.message));
+  }
+}
 
+export function* getClassData() {
+  yield takeLatest(actions.GET_CLASSDATA_REQUEST, getClassDataSaga);
+}
+
+function* getLocationDataSaga(action) {
+  try {
+    const response = yield call(axiosCall, "POST", API.GETLOCATIONDATA,action.payload);
+    //console.log(response);
+    if (response?.status == 200) {
+      yield put(getLocationDataSuccess({ locationData: response?.data }));
+    } else {
+      yield put(getLocationDataError(response?.data?.message));
+    }
+  } catch (e) {
+    yield put(getLocationDataError(e.message));
+  }
+}
+
+export function* getLocationData() {
+  yield takeLatest(actions.GET_LOCATIONDATA_REQUEST, getLocationDataSaga);
+}

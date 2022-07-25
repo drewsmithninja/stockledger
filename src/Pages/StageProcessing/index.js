@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
 import { ExcelRenderer } from "react-excel-renderer";
 import Table from "../../Components/Table/index";
 import TextField from "@mui/material/TextField";
@@ -18,6 +19,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import UploadFileIcon from  '@mui/icons-material/Upload';
 import SendIcon from '@mui/icons-material/Send';
 import SearchIcon from '@mui/icons-material/Search';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import {headCells} from './tableHead';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -33,9 +35,19 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 const useStyles = makeStyles({
-  maindiv: {
+  stagemaindiv: {
     position: "relative",
     width: "calc(95vw - 64px)",
+    '& table':{
+        '& tr':{
+              '& td:nth-child(14)':{
+                    display: 'none'
+              },
+              '& td:nth-child(15)':{
+                display: 'none'
+          }
+        }
+    }
   },
   boxDiv: {
     textAlign: "initial",
@@ -52,9 +64,13 @@ const useStyles = makeStyles({
   GobackDiv: {
     cursor: "pointer",
   },
+  resetBtn: {
+    marginTop: "40px !important",
+  }
 });
 const StageProcessing = () => {
   const [tabledata, setTabledata] = useState("");
+  const [filterData, setFilterData] = useState("");
   const [isValidExcel, setIsValidExcel] = useState(true);
   const [inputValue, setInputValue] = useState();
   const [allData, setAllData] = useState("");
@@ -74,13 +90,23 @@ const StageProcessing = () => {
     // Column Filter of table
   useEffect(() => {
     if (inputValue) {
-      const filteredTable = tabledata.filter((val) =>
-        val[Object.keys(inputValue)[0]]
-          ?.toString()
-          .toLowerCase()
-          .includes(Object.values(inputValue)[0]?.toString().toLowerCase())
-      );
+      console.log(inputValue);
+      // const filteredTable = tabledata.filter((val) => Object.keys().map((item) => {
+      //     if(val[item] !== undefined && inputValue[item] !== undefined){
+      //         return val[item]?.toString().toLowerCase().includes(inputValue[item]?.toString().toLowerCase())   
+      //      }
+      //     })
+      // );
+      const filteredTable = tabledata.filter(props => 
+        Object
+          .entries(inputValue)
+          .every(([key,val]) => 
+            !val.length ||
+            props[key]?.toString().toLowerCase().includes(val?.toString().toLowerCase()))
+      )
+
       setTabledata(filteredTable);
+      setFilterData(filteredTable);
     }
   }, [inputValue]);
 
@@ -101,14 +127,16 @@ const StageProcessing = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (value == "") {
-      setInputValue({
-        [name]: value,
-      });
+      setInputValue(prevState => ({
+        ...prevState,
+        [name]: value
+    }));
       setTabledata(allData);
     } else {
-      setInputValue({
-        [name]: value,
-      });
+      setInputValue(prevState => ({
+        ...prevState,
+        [name]: value
+    }));
     }
   };
   // Get Current User name
@@ -131,8 +159,6 @@ const StageProcessing = () => {
         const formatData = formattedExcelData(resp.rows);
         formatData.map(item => {
             item['SR_NO']= count;
-            item['CREATE_DATETIME'] = new Date().toLocaleString();
-            item['CREATE_ID'] = getcurrentUser();
             item['UNIT_COST'] = item.UNIT_COST?.toFixed(4);
             item['UNIT_RETAIL'] = item.UNIT_RETAIL?.toFixed(4);
             count++;
@@ -199,6 +225,12 @@ const StageProcessing = () => {
   };
   // Final Submit data handler 
   const finalSubmit = () => {
+    tabledata.map( item => {
+      delete item?.SR_NO;
+      item['CREATE_DATETIME'] = new Date().toLocaleString();
+      item['CREATE_ID'] = getcurrentUser();
+            
+    });
     dispatch(getStageProcessingRequest(JSON.stringify(tabledata)));
     setOpen(false)
   }
@@ -207,8 +239,9 @@ const StageProcessing = () => {
     setOpen(false)
   }
   const handleMsgClose = () => {
-    setIsError(false)
-    setIsSuccess(false)
+    setIsError(false);
+    setIsSuccess(false);
+    setTabledata(allData);
   }
 
   const tableSearch = (event) => {
@@ -229,9 +262,14 @@ const StageProcessing = () => {
     } else setTabledata(allData);
   }, [searched]);
 
+  const resetFilter = () => {
+    setSearched("");
+    setInputValue("");
+    setTabledata(allData);
+  }
 
   return (
-    <Box className={StageProceesClasses.maindiv}>
+    <Box className={StageProceesClasses.stagemaindiv}>
       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         <Grid item xs={4}>
           <Box className={StageProceesClasses.boxDiv}>
@@ -252,7 +290,6 @@ const StageProcessing = () => {
               margin="none"
               name="searchtext"
               sx={{
-                position:"fixed",
                 background:'#fff', 
               }}
               onChange={(e) => tableSearch(e)}
@@ -275,7 +312,7 @@ const StageProcessing = () => {
               justifyContent="flex-end"
               alignItems="flex-end"
             >
-              <Button variant="contained" onClick={SubmitList} startIcon={<SendIcon />} sx={{position:"fixed",top:"72px", zIndex:"99"}} >
+              <Button variant="contained" onClick={SubmitList} startIcon={<SendIcon />}>
                 {StagingProcessing?.isLoading ? (
                   <CircularProgress color="inherit" />
                 ) : (
@@ -287,6 +324,8 @@ const StageProcessing = () => {
         }
       </Grid>
       {tabledata && (
+         <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+           <Grid item xs={11} style={{ paddingLeft:"40px"}}>
         <Table
           tableData={tabledata}
           setTabledata={setTabledata}
@@ -295,6 +334,13 @@ const StageProcessing = () => {
           headCells={headCells}
           pageName = "stage"
         />
+        </Grid>
+        <Grid item xs={1} style={{ paddingLeft:"0px"}}>
+        <IconButton className={StageProceesClasses.resetBtn} onClick={resetFilter}>
+        <RestartAltIcon />
+</IconButton>
+        </Grid>
+        </Grid>
       )}
       <Stack spacing={2} sx={{ width: "100%" }}>
         <Snackbar open={isSuccess} autoHideDuration={6000} onClose={handleMsgClose}>
