@@ -118,6 +118,8 @@ export default function EnhancedTableHead(props) {
                 }
                 width={searchData.width}
                 onChange={handleSearch}
+                editRows={editRows}
+                checkEditrows={true}
               />
             </TableCell>
           </>

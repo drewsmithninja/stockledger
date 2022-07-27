@@ -20,8 +20,8 @@ const useStyles = makeStyles({
       }
     },
   },
-  '& Mui-disabled':{
-      opacity: '0.3',
+  '& .Mui-disabled': {
+    opacity: '0.3',
   }
 });
 
@@ -51,17 +51,79 @@ const CommonTable = ({
   handleChangeRowsPerPage,
   headCells,
   pageName,
+  setTabledata,
+  allData,
 }) => {
 
 
     const [updateData, setupdateData] = useState({});  
     const rowClasses = useStyles();  
 
+  // const onBlur = (event, value , row) => {
+  //   console.log("test", event.target.value, value, row);
+  //   row[event.target.name] = event.target.value;
+    
+  //   if(event.target.name == 'QTY') {
+  //     row['TOTAL_COST'] = parseInt(event.target.value) * parseInt(row['UNIT_COST']);
+  //   }
+    
+  //   var finalData = updateData;
+  //   if(updateData.length === 0) {
+  //     finalData.push(row);
+  //   }
+  //   else {
+  //     var t = finalData.findIndex(x => x.TRAN_SEQ_NO === row['TRAN_SEQ_NO']);
+  //     if(t === -1) {
+  //       finalData.push(row);
+  //     }
+  //     else {
+  //       finalData[t] = row;
+  //     }
+  //   }
+  //   setupdateData(finalData);
+  //   setUpdateRow(finalData);
+  //   console.log("testafter", row, updateData);
+  //     sessionStorage.setItem('updateColume',JSON.stringify(finalData));
+  //   // return;
+  //   // let temp = JSON.stringify(updateData);
+  //   // temp = JSON.parse(temp);
+  //   // console.log(temp);
+  //   //   //let oldrow = rows.filter((item) => item?.TRAN_SEQ_NO.includes(editRows) );
+  //   // if(temp.findIndex(x => x.TRAN_SEQ_NO === row['TRAN_SEQ_NO']) == -1 ){
+  //   // temp[row?.TRAN_SEQ_NO] = row;
+  //   // temp[row?.TRAN_SEQ_NO][event.target.name] = event.target.value; 
+  //   // if(event.target.name == 'QTY'){
+  //   //   temp[row?.TRAN_SEQ_NO]['TOTAL_COST'] = event.target.value * row['UNIT_COST']; 
+  //   // }
+  //   // //let updaterow = Object.values(temp);
+    
+  //   // console.log(temp);
+  //   // setupdateData(temp)
+  //   // }
+  // }
+
+
+
+  // useEffect(() => {
+  //   console.log("testafter1", updateData);
+    
+  //   setUpdateRow(updateData);
+    
+  // },[updateData])
+
+
   const onBlur = (event, value , row) => {
     let temp = {...updateData};
-    //let oldrow = rows.filter((item) => item?.TRAN_SEQ_NO.includes(editRows) );
+    console.log(temp);
     temp[row?.TRAN_SEQ_NO] = row;
     temp[row?.TRAN_SEQ_NO][event.target.name] = event.target.value; 
+    if(event.target.name == 'QTY') {
+           temp[row?.TRAN_SEQ_NO]['TOTAL_COST'] = parseInt(event.target.value) * parseInt(row['UNIT_COST']); 
+         }
+      if(value){
+        temp[row?.TRAN_SEQ_NO]['TRN_TYPE'] = value['TRN_TYPE']; 
+      }   
+      console.log(temp);
     setupdateData(temp)
   }
 
@@ -75,7 +137,7 @@ const CommonTable = ({
     <>
       <Paper sx={{ maxWidth: "fit-content", maxHeight: "fit-content", mb: 2 }}>
       {(pageName != "stage") &&
-        <TableToolbar selected={selected} handledelete={handleDelete} edithandle={handleEdit} seteditRows={seteditRows} setSelected={setSelected} editRows={editRows} />
+        <TableToolbar selected={selected} handledelete={handleDelete} edithandle={handleEdit} seteditRows={seteditRows} setUpdateRow={setUpdateRow} setSelected={setSelected} editRows={editRows} setupdateData={setupdateData} setTabledata={setTabledata} allData={allData}/>
         } 
         <TableContainer sx={{ overflowX: "scroll", overflowY: "scroll",height: "fit-content", maxHeight: "70vh" }}>
           <Table
@@ -122,7 +184,7 @@ const CommonTable = ({
                           style={{
                             color: "#635b5bb8",
                           }}
-                          disabled={editRows && editRows.length > 0}
+                         // disabled={editRows && editRows.length > 0}
                         />
                       </TableCell>
                       { editRows?.includes(row?.TRAN_SEQ_NO) ? <>

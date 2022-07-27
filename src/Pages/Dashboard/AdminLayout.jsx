@@ -141,6 +141,9 @@ export default function Index() {
     if (routedata == "Home") {
       navigate(`/dashboard`);
     }
+    if (routedata == "System Config") {
+      navigate(`/system-config`);
+    }
   };
   const handleClick = (index) => {
     setIsOpen(!isOpen);

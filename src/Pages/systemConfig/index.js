@@ -9,8 +9,6 @@ import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import Modal from '@mui/material/Modal';
 import Autocomplete from '@mui/material/Autocomplete';
-import IconButton from "@mui/material/IconButton";
-import FormControl from "@mui/material/FormControl";
 import Typography from '@mui/material/Typography';
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import Drawer from "@mui/material/Drawer";
@@ -21,8 +19,8 @@ import { headCells } from "./tableHead";
 import SearchIcon from '@mui/icons-material/Search';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import SendIcon from '@mui/icons-material/Send';
-import { trnType } from "./transType.js";
-import { errorList } from "./errorType.js"; 
+import { trnType } from "../../Components/ErrorProcessing/transType.js";
+import { errorList } from "../../Components/ErrorProcessing/errorType.js"; 
 //import "./index.css";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -102,7 +100,7 @@ const initialItemData = {
 }
 
 
-const ErrorProcessing = () => {
+const SystemConfig = () => {
   const [tabledata, setTabledata] = useState("");
   const [inputValue, setInputValue] = useState();
   const [allData, setAllData] = useState("");
@@ -197,6 +195,12 @@ const ErrorProcessing = () => {
 
   useEffect(() => {
     if (inputValue) {
+      // const filteredTable = tabledata.filter((val) =>
+      //   val[Object.keys(inputValue)[0]]
+      //     ?.toString()
+      //     .toLowerCase()
+      //     .includes(Object.values(inputValue)[0]?.toString().toLowerCase())
+      // );
       const filteredTable = tabledata.filter(props => 
         Object
           .entries(inputValue)
@@ -828,7 +832,7 @@ const searchPanel = () => (
         <Grid item xs={6}>
           <Box className={ErrorProceesClasses.boxDiv}>
             <div className={ErrorProceesClasses.uploaddiv}>
-              <h4>Error Processing Data</h4>
+              <h4>System Config</h4>
             </div>
           </Box>
         </Grid>
@@ -907,4 +911,4 @@ const searchPanel = () => (
   );
 };
 
-export default ErrorProcessing;
+export default SystemConfig;

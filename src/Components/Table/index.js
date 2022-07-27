@@ -44,6 +44,7 @@ export default function EnhancedTable({
   headCells,
   setTabledata,
   pageName,
+  allData,
 }) {
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("");
@@ -69,7 +70,7 @@ export default function EnhancedTable({
     setSelected([]);
   };
 
-  const handleClick = (event, name,mode= 'delete') => {
+  const handleClick = (event, name) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected = [];
 
@@ -85,13 +86,12 @@ export default function EnhancedTable({
         selected.slice(selectedIndex + 1)
       );
     }
-    console.log(editRows);
-    console.log(newSelected);
-    if(mode == 'delete'){
+    //console.log(editRows);
+    //console.log(newSelected);
+
     setSelected(newSelected);
-    }else{
-      seteditRows(newSelected);     
-    }
+      //seteditRows(newSelected);     
+  
   };
 
   const handleDelete = () => {
@@ -149,6 +149,8 @@ export default function EnhancedTable({
           emptyRows={emptyRows}
           handleChangeRowsPerPage={handleChangeRowsPerPage}
           pageName={pageName}
+          setTabledata={setTabledata}
+          allData={allData}
         />
       </Box>
     </>
