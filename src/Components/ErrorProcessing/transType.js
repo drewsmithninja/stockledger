@@ -42,12 +42,12 @@ export const trnType = [
 	{
 		TRN_TYPE : "IAD",
 		AREF : 2,
-		TRN_NAME : "Inventory Ajustment"
+		TRN_NAME : "Inventory Adjustment"
 	},
 	{
 		TRN_TYPE : "IAD",
 		AREF : 3,
-		TRN_NAME : "Inventory Ajustment COGS"
+		TRN_NAME : "Inventory Adjustment COGS"
 	},
 	{
 		TRN_TYPE : "DIS",
@@ -137,7 +137,7 @@ export const trnType = [
 	{
 		TRN_TYPE : "FMU",
 		AREF : 1,
-		TRN_NAME : "Wholesale Franchise Markups"
+		TRN_NAME : "Wholesale Franchise Markup"
 	},
 	{
 		TRN_TYPE : "FMD",

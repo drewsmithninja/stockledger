@@ -873,6 +873,7 @@ const searchPanel = () => (
           headCells={headCells}
           setTabledata={setTabledata}
           allData={allData}
+          pageName="error"
         />
       )}
 

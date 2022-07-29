@@ -6,6 +6,7 @@ import { makeStyles } from "@mui/styles";
 import TableToolbar from "../Toolbar/index";
 import { trnType } from "../../ErrorProcessing/transType";
 import "../index.css";
+import { bgcolor } from "@mui/system";
 
 const useStyles = makeStyles({
   tabCell: {
@@ -58,7 +59,7 @@ const CommonTable = ({
 
     const [updateData, setupdateData] = useState({});  
     const rowClasses = useStyles();  
-
+  console.log(editRows);
   // const onBlur = (event, value , row) => {
   //   console.log("test", event.target.value, value, row);
   //   row[event.target.name] = event.target.value;
@@ -115,15 +116,15 @@ const CommonTable = ({
   const onBlur = (event, value , row) => {
     let temp = {...updateData};
     console.log(temp);
-    temp[row?.TRAN_SEQ_NO] = row;
-    temp[row?.TRAN_SEQ_NO][event.target.name] = event.target.value; 
+    temp[(row?.TRAN_SEQ_NO)?row?.TRAN_SEQ_NO:row?.SR_NO] = row;
+    temp[(row?.TRAN_SEQ_NO)?row?.TRAN_SEQ_NO:row?.SR_NO][event.target.name] = event.target.value; 
     if(event.target.name == 'QTY') {
            temp[row?.TRAN_SEQ_NO]['TOTAL_COST'] = parseInt(event.target.value) * parseInt(row['UNIT_COST']); 
          }
       if(value){
-        temp[row?.TRAN_SEQ_NO]['TRN_TYPE'] = value['TRN_TYPE']; 
+        temp[(row?.TRAN_SEQ_NO)?row?.TRAN_SEQ_NO:row?.SR_NO]['TRN_TYPE'] = value['TRN_TYPE'];
+        temp[(row?.TRAN_SEQ_NO)?row?.TRAN_SEQ_NO:row?.SR_NO]['AREF'] = value['AREF']; 
       }   
-      console.log(temp);
     setupdateData(temp)
   }
 
@@ -187,10 +188,11 @@ const CommonTable = ({
                          // disabled={editRows && editRows.length > 0}
                         />
                       </TableCell>
-                      { editRows?.includes(row?.TRAN_SEQ_NO) ? <>
+                      { editRows?.includes((row?.TRAN_SEQ_NO)?row?.TRAN_SEQ_NO:row?.SR_NO) ? <>
                         {Object.entries(row).map(([key, value]) => {
-                          
-                            let editable = false;
+                            let editable;
+                          if(pageName == "error"){
+                              editable = false;
                             if(key == "ITEM"){
                                 editable = row["ERR_MSG"] === "ITEM IS NULL" || row["ERR_MSG"] == "INVALID ITEM";
                             }if(key == "LOCATION"){
@@ -204,16 +206,22 @@ const CommonTable = ({
                             }if(key == 'TRAN_DATE'){
                               editable = row['ERR_MSG'] === "trn_date cannot be in future";
                             }
-
-
-
+                          }
+                          if(pageName == "config"){
+                              editable = true;
+                            if(key == 'TRN_NAME'){
+                              editable = false;
+                              console.log(editable);
+                              }
+                          }
                             return <TableCell padding="none" align="left" key={key} className={rowClasses.tabCell}>
-                              {(key == 'TRN_NAME') ? (
+                              {(key == 'TRN_NAME' && pageName == 'error') ? (
                                     <Autocomplete
                                     disabled={!editable}
                                     disablePortal
                                     size="small"
                                     id="combo-box-trn-type"
+                                    // value={(row?.TRN_TYPE == option?.TRN_TYPE)?row?.TRN_TYPE: }
                                     onChange={ (event, value) => onBlur(event, value, row)}
                                     options={trnType}
                                     getOptionLabel={(option) => option.TRN_NAME}
@@ -236,10 +244,23 @@ const CommonTable = ({
                       )}
                       </> :           
                       <>
-                      {Object.entries(row).map(([key, value])=> 
-                          <TableCell align="left" key={key} className={rowClasses.tabCell} sx={((key == 'SR_NO')?'display:none':'')}>
+                      {Object.entries(row).map(([key, value])=> {
+                          let colorcode = "";
+                          if(pageName == "reconciliation"){
+                            row['QTY_MATCHED'] = (row['QTY'] === row['ROLLED_QTY'])?"Y":"N";
+                            row['COST_MATCHED'] = (row['COST'] === row['ROLLED_COST'])?"Y":"N";
+                            row['RETAIL_MATCHED'] = (row['RETAIL'] === row['ROLLED_RETAIL'])?"Y":"N";
+                              if(key== 'QTY' && key== 'ROLLED_QTY'){
+                                if(row['QTY_MATCHED'] == "N")
+                                    colorcode = "#FFFF00";
+                                    console.log("test");
+                              }
+                          }
+                          return (<TableCell align="left" key={key} className={rowClasses.tabCell} sx={((key == 'SR_NO')?'display:none':'')} 
+                          style={{background:((colorcode)?`${colorcode}`:'')}}>
                               {value || "" }
-                          </TableCell>
+                          </TableCell> )
+                      }
                       )}
                       </> }
                       

@@ -136,6 +136,9 @@ export default function Index() {
     if (routeName === "Error Processing") {
       navigate("/error-processing");
     }
+    if(routeName === "Reconciliation"){
+      navigate("/reconciliation");
+    }
   };
   const handleHomePage = (routedata) => {
     if (routedata == "Home") {

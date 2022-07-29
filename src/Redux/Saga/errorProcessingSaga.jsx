@@ -16,6 +16,7 @@ import { API } from "../../services/api";
 function* fetchDataSaga(action) {
   try {
     const response = yield call(axiosCall, "POST", API.FETCHERRORDATA,action.payload);
+    console.log(response);
     if (response?.data?.status == 500) {
       yield put(getErrorProcessingError({Data: response?.data}));
     } else {

@@ -4,4 +4,9 @@ export const API = {
   UPDATEERRORDATA: "/delete_err_trn/",
   GETCLASSDATA: "/lov_item_dtl/",
   GETLOCATIONDATA: "/location_validation/",
+  FETCHCONFIGDATA: "/system_config_tab/",
+  UPDATECONFIGDATA: "/sys_conf/",
+  DAILYCOUNTDATA: "/count_pending/",
+  STAGECOUNTDATA: "/count_stg_trn/",
+  ERRORCOUNTDATA: "/count_trn/",
 };

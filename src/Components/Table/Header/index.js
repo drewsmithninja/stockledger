@@ -19,6 +19,10 @@ const useStyles = makeStyles({
   SearchHead: {
     position: "sticky",
     top: 0,
+  },
+  TitleHead: {
+    position: "sticky",
+    top: 0,
   }
 });
 
@@ -33,8 +37,6 @@ export default function EnhancedTableHead(props) {
     handleSearch,
     searchText,
     headCells,
-    editRows = [],
-    checkEditrows = false,
   } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
@@ -43,7 +45,7 @@ export default function EnhancedTableHead(props) {
   const headerclasses = useStyles();
   return (
     <>
-      <TableHead className={headerclasses.SearchHead}>
+      <TableHead className={headerclasses.TitleHead}>
         <TableRow>
           <TableCell padding="checkbox">
             <Checkbox
@@ -57,7 +59,6 @@ export default function EnhancedTableHead(props) {
               style={{
                 color: "#fff",
               }}
-              disabled={checkEditrows?editRows.length > 0:false}
             />
           </TableCell>
           {headCells.map((headCell) => (
@@ -118,8 +119,6 @@ export default function EnhancedTableHead(props) {
                 }
                 width={searchData.width}
                 onChange={handleSearch}
-                editRows={editRows}
-                checkEditrows={true}
               />
             </TableCell>
           </>

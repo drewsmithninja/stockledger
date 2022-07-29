@@ -9,20 +9,20 @@ import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import Modal from '@mui/material/Modal';
 import Autocomplete from '@mui/material/Autocomplete';
+import IconButton from "@mui/material/IconButton";
+import FormControl from "@mui/material/FormControl";
 import Typography from '@mui/material/Typography';
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import Drawer from "@mui/material/Drawer";
 import { makeStyles } from "@mui/styles";
-import { getSystemConfigRequest, postSystemConfigRequest } from "../../Redux/Action/systemConfig";
+import { getErrorProcessingRequest, postErrorProcessingRequest, getClassDataRequest, getLocationDataRequest } from "../../Redux/Action/errorProcessing";
 import CircularProgress from "@mui/material/CircularProgress";
 import { headCells } from "./tableHead";
 import SearchIcon from '@mui/icons-material/Search';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import SendIcon from '@mui/icons-material/Send';
-import { trnType } from "../../Components/ErrorProcessing/transType.js";
-import Chip from '@mui/material/Chip';
+import { trnType } from "../../Components/ErrorProcessing/transType";
 
-//import "./index.css";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -33,15 +33,13 @@ const useStyles = makeStyles({
     width: "calc(95vw - 0px)",
     '& table':{
       '& tr':{
-            '& td:nth-child(2)':{
-                  display: 'none'
-            },
-            '& td:nth-child(4)':{
-              display: 'none'
-           },
-           '& td:nth-child(14)':{
-             display: 'none'
-          }
+            // '& th:nth-child(1)':{
+            //     display: 'none'
+            //  },
+             
+            // '& td:nth-child(1)':{
+            //       display: 'none'
+            // }
       }
   }
 },  boxDiv: {
@@ -81,16 +79,29 @@ const useStyles = makeStyles({
 });
 
 const initialsearch = {
-  TRN_TYPE: [] || "",
-  AREF: [] || "",
+  DEPT: [],
+  LOCATION: [],
+  TRN_TYPE: [],
+  AREF: [],
+  TRN_DATE: "",
 }
 
-const SystemConfig = () => {
+const initialItemData = {
+  DEPT: "",
+  CLASS: "",
+  SUBCLASS: "",
+  ITEM: ""
+}
+
+
+const Reconciliation = () => {
   const [tabledata, setTabledata] = useState("");
   const [inputValue, setInputValue] = useState();
   const [allData, setAllData] = useState("");
   const [editRows, seteditRows] = useState([]);
   const [updateRow, setUpdateRow] =  useState([]);
+  const [itemData, setItemData] = useState(initialItemData);
+  const [locationData, setLocationData] = useState([{}]);
   const [loading, setLoading] = useState(false);
   const [isSearch, setSearch] = useState(false);
   const [searchData, setSearchData] = useState(initialsearch);
@@ -98,7 +109,6 @@ const SystemConfig = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isSubmit, setSubmit] = useState(false);
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState([]);
   const [state, setState] = React.useState({
     top: false,
     left: false,
@@ -107,7 +117,7 @@ const SystemConfig = () => {
   });
   const ErrorProceesClasses = useStyles();
   const ErrorProcessingData = useSelector(
-    (state) => state.SystemConfigReducers
+    (state) => state.ErrorProcessingReducers
   );
   console.log(ErrorProcessingData);
   const dispatch = useDispatch();
@@ -121,26 +131,51 @@ const SystemConfig = () => {
 
   const serializedata = (datatable) => {
     let newTabledata = [];
-    let count = 1;
     if(datatable.length > 0){
       datatable.map( item => {
-        item['SR_NO']= count;
           const reorder = {
-            'TRN_TYPE':"",
+            'ITEM' : null,
+            'ERR_MSG': null,
+            'ITEM_DESC': null,
+            'DEPT': null,
+            'DEPT_DESC': null,
+            'CLASS': null,
+            'CLASS_DESC': null,
+            'SUBCLASS':null,
+            'SUBCLASS_DESC': null,
+            'LOCATION_TYPE': null,
+            'LOCATION': null,
+            'LOCATION_NAME': "",
+            'TRN_DATE': "",
             'TRN_NAME': "",
-            'AREF': "",
-            'STCK_LDGR_APPL': "",
-            'SOH_IMPACT': "",
-            "COST_USED": "",
-            'PERIOD_INVT_TRAN':"",
-            'INJECT_PERIOD': "",
-            'OVERRIDE_ACCUMULATE': "",
-            'HIER_LEVEL':"",
-            'FIN_APPL': "",
-            'ACCT_REFERENCE': ""
+            'QTY': "",
+            'UNIT_COST': "",
+            'UNIT_RETAIL': "",
+            'TOTAL_COST': "",
+            'TOTAL_RETAIL': "",
+            'REF_NO1': "",
+            'REF_NO2': "",
+            'REF_NO3': "",
+            'REF_NO4': "",
+            'CURRENCY': "",
+            'ERR_SEQ_NO': null,
+            'TRAN_SEQ_NO': null,
+            'TRN_TYPE': "",
+            'AREF': null,
           }
-          count++;
-
+          parseFloat(item.LOCATION?.toFixed(1));
+          delete item?.PROCESS_IND;
+          delete item?.SELLING_UOM;
+          delete item?.TRN_POST_DATE;
+          delete item?.REF_ITEM;
+          delete item?.REF_ITEM_TYPE;
+          delete item?.PACK_QTY;
+          delete item?.PACK_COST;
+          delete item?.PACK_RETAIL;
+          delete item?.CREATE_ID;
+          delete item?.CREATE_DATETIME;
+          delete item?.REV_NO;
+          delete item?.REV_TRN_NO;
             let test = Object.assign(reorder,item);
             newTabledata.push(test); 
     })
@@ -175,16 +210,22 @@ const SystemConfig = () => {
   useEffect(() => { 
     if(isSubmit){
       setTimeout(() => {
-        dispatch(getSystemConfigRequest([searchData])) 
-      },2000)
+        dispatch(getErrorProcessingRequest([searchData])) 
+      },3000)
     }
 },[isSubmit]);
 
 useEffect(() => {
   if(isSearch){
-    dispatch(getSystemConfigRequest([searchData])) 
+    dispatch(getErrorProcessingRequest([searchData])) 
   }
 },[isSearch])
+
+useEffect(()=> {
+  setLoading(true);
+  dispatch(getClassDataRequest([{}]));
+  dispatch(getLocationDataRequest([{}]));
+},[''])
 
   useEffect(() => {
         if(ErrorProcessingData?.data?.Data && Array.isArray(ErrorProcessingData?.data?.Data)){
@@ -193,6 +234,12 @@ useEffect(() => {
           setLoading(false);
           setSubmit(false);
           setSearch(false);
+        }else if(ErrorProcessingData?.data?.itemData && Array.isArray(ErrorProcessingData?.data?.itemData)){
+          setItemData(ErrorProcessingData?.data?.itemData);
+          setLoading(false);
+        }else if(ErrorProcessingData?.data?.locationData && Array.isArray(ErrorProcessingData?.data?.locationData)){
+          setLocationData(ErrorProcessingData?.data?.locationData);
+          setLoading(false);
         }else {
           setSearch(false)
         }
@@ -222,18 +269,22 @@ useEffect(() => {
     if(Object.keys(updateRow).length > 0){
       let sendRow = Object.values(updateRow);
       sendRow.map((item)=> {
+          delete item?.ITEM_DESC;
+          delete item?.DEPT_DESC;
+          delete item?.CLASS_DESC;
+          delete item?.SUBCLASS_DESC;
           delete item?.TRN_NAME;
+          delete item?.LOCATION_NAME;
           delete item?.undefined;
-          delete item?.SR_NO;
-          if(item?.ACCT_REFERENCE == null){
-            item['ACCT_REFERENCE']= "";
-          }
       })
-      console.log("updateRow",sendRow);
+      console.log(sendRow);
     setLoading(true);
-    dispatch(postSystemConfigRequest(sendRow));
-    initialsearch.TRN_TYPE= [] || "";
-    initialsearch.AREF = [] || "";
+    dispatch(postErrorProcessingRequest(sendRow));
+    initialsearch.DEPT = [];
+    initialsearch.LOCATION = [];
+    initialsearch.TRN_TYPE= [];
+    initialsearch.TRN_DATE= [];
+    initialsearch.AREF = [];
     setSearchData(initialsearch);
     setSubmit(true);
     seteditRows([]);
@@ -248,6 +299,14 @@ const handleSubmit = (event) => {
     setState({ ...state, 'right': open });
 }
 
+const onChange = (e) => {
+  setSearchData((prev) => {
+    return {
+      ...prev,
+      [e.target.name]: e.target.value,
+    };
+  });
+}
 
 const handleMsgClose = () => {
   setIsError(false)
@@ -256,15 +315,73 @@ const handleMsgClose = () => {
 
 const onReset = (event) => {
 
+    initialsearch.DEPT = [];
+    initialsearch.LOCATION = [];
     initialsearch.TRN_TYPE= [];
+    initialsearch.TRN_DATE= [];
     initialsearch.AREF = [];
-    console.log('datainitial',initialsearch);
       setSearchData(initialsearch)
-      console.log('data',searchData);
       setSearch(false);
       setTabledata("");
 
 }
+
+const selectDept = (event, value) => {
+  let selectedDept = [];
+  if(value.length > 0){
+    console.log(itemData);
+  const filterClass = itemData.filter((item) => { return value.some((val) => { return item.DEPT === val.DEPT})});
+    console.log(filterClass);
+
+    value.map(
+      (item) => {
+        selectedDept.push(item.DEPT);
+      }
+    )
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        DEPT : selectedDept
+      };
+    });
+
+  }else{
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        DEPT : []
+      };
+    });
+  }
+}
+
+const selectLocation = (event, value) => {
+  console.log(value);
+      let selectedLocation = [];
+      if(value.length > 0){
+        value.map(
+          (item) => {
+            selectedLocation.push(item.LOCATION);
+          }
+        )
+      setSearchData((prev) => {
+        return {
+          ...prev,
+          LOCATION : selectedLocation
+        };
+      });
+      }else{
+        initialsearch.LOCATION = '';
+        setSearchData((prev) => {
+          return {
+            ...prev,
+            LOCATION : []
+          };
+        });
+      }
+}
+
+
  const selectTrantype = (event, value) => {
    console.log(value);
   let selectedTrantype = [];
@@ -295,7 +412,6 @@ const onReset = (event) => {
 
  }
 console.log(searchData);
-console.log(tabledata)
 const searchPanel = () => (
   <Box
     sx={{ width: 350, marginTop: '80px'}}
@@ -303,45 +419,100 @@ const searchPanel = () => (
     component="form"
     onSubmit={handleSubmit}
   > <Grid item xs={12} sx={{display:'flex', justifyContent:'center', marginTop: '15px'}}>
-         <Stack spacing={2} sx={{ width: 250 }}>     
+         <Stack spacing={2} sx={{ width: 250 }}>
+      
+                 <Autocomplete
+              multiple
+              size="small"
+              id="combo-box-item"
+              sx={{ width: 250 }}
+              options={(itemData.length > 0)?itemData:[]}
+              //value={searchData?.DEPT}
+              isOptionEqualToValue={(option, value) => option.DEPT === value.DEPT}
+              autoHighlight
+              onChange={selectDept}
+              getOptionLabel={(option) => `${option.DEPT.toString()}-${option.DEPT_DESC.toString()}`}
+              renderOption={(props, option) => (
+                <Box component="li" {...props}>
+                  {option.DEPT}-{option.DEPT_DESC}
+                </Box>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  value={searchData?.ITEM}
+                  variant="standard" 
+                  label="Choose a DEPT"
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: 'new-password', // disable autocomplete and autofill
+                  }}
+                />
+              )}
+            />
+    
+            <Autocomplete
+              multiple
+              size="small"
+              id="combo-box-location"
+              sx={{ width: 250 }}
+              options={(locationData.length > 0)?locationData:[]}
+             // value={searchData.LOCATION}
+              autoHighlight
+              isOptionEqualToValue={(option, value) => option.LOCATION === value.LOCATION}
+              onChange={selectLocation}
+              getOptionLabel={(option) => `${option.LOCATION.toString()}-(${option.LOCATION_NAME.toString()})`}
+              renderOption={(props, option) => (
+                <Box component="li" {...props}>
+                  {option.LOCATION} ({option.LOCATION_NAME})
+                </Box>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="standard" 
+                  label="Choose a Location"
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: 'new-password', // disable autocomplete and autofill
+                  }}
+                />
+              )}
+            />
+       
             <Autocomplete
               multiple
               disablePortal
               size="small"
               id="combo-box-trn-type"
+             // value={(searchData?.TRN_TYPE.length > 0)?searchData?.TRN_TYPE:[]}
               onChange={selectTrantype}
               options={trnType}
               getOptionLabel={(option) => option.TRN_NAME}
               sx={{ width: 250 }}
               renderInput={(params) => <TextField {...params} label="TRN TYPE" variant="standard" />}
             />
-{/* 
-<Autocomplete
-        value={value}
-        onChange={(event, newValue) => {
-          console.log(newValue);
-          setValue(newValue);
-        }}
-        multiple
-        id="tags-filled"
-        options={trnType.map((option) => option.TRN_NAME)}
-        renderTags={(value, getTagProps) =>
-          value.map((option,index) => (
-            <Chip
-              variant="filled"
-              label={option}
-              {...getTagProps({ index })}
+
+
+             <TextField
+              className={ErrorProceesClasses.dateField}
+              margin="normal"
+              size="small"
+              variant="standard" 
+              name="TRN_DATE"
+              label="TRN DATE"
+              type="date"
+              inputProps={{ max:"2022-07-27"}}
+              value={searchData.TRN_DATE}
+              onChange={onChange}
+              sx={{ width: 250 }}
+              style={{
+                color: "#D3D3D3",
+              }}
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
-          ))
-        }
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            variant="standard"
-            label="TRN_TYPE"
-          />
-        )}
-      /> */}
             <div>
             <Button
               className={ErrorProceesClasses.textField}
@@ -365,14 +536,15 @@ const searchPanel = () => (
             </Grid>
   </Box>
 );
-
+let tableData = [{"DEPT": "1", "LOCATION": "71", "TRN_TYPE": "SLS", "END_OF_PERIOD": "20-07-2022", "QTY": 10, "COST": 500, "RETAIL": 4500, "ROLLED_QTY": 10, "ROLLED_COST": 500, "ROLLED_RETAIL": 4500, "QTY_MATCHED": "", "COST_MATCHED": "", "RETAIL_MATCHED": ""}
+,{"DEPT": "2", "LOCATION": "72", "TRN_TYPE": "ITO", "END_OF_PERIOD": "22-07-2022", "QTY": 15, "COST": 200, "RETAIL": 1500, "ROLLED_QTY": 1, "ROLLED_COST": 300, "ROLLED_RETAIL": 4500, "QTY_MATCHED": "", "COST_MATCHED": "", "RETAIL_MATCHED": ""}]
   return (
     <Box className={ErrorProceesClasses.maindiv}>
       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         <Grid item xs={6}>
           <Box className={ErrorProceesClasses.boxDiv}>
             <div className={ErrorProceesClasses.uploaddiv}>
-              <h4>System Config</h4>
+              <h4>Reconciliation</h4>
             </div>
           </Box>
         </Grid>
@@ -406,7 +578,7 @@ const searchPanel = () => (
                 ) : (
         tabledata &&
         <Table
-          tableData={tabledata}
+          tableData={tableData}
           //handleDelete={handleDelete}
           handleSearch={handleChange}
           searchText={inputValue}
@@ -417,7 +589,7 @@ const searchPanel = () => (
           headCells={headCells}
           setTabledata={setTabledata}
           allData={allData}
-          pageName="config"
+          pageName="reconciliation"
         />
       )}
 
@@ -452,4 +624,4 @@ const searchPanel = () => (
   );
 };
 
-export default SystemConfig;
+export default Reconciliation;
