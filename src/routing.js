@@ -6,6 +6,7 @@ import AdminLayout from "./Pages/Dashboard/AdminLayout";
 import ErrorProcessing from "./Components/ErrorProcessing";
 import SystemConfig from "./Pages/systemConfig";
 import Reconciliation from "./Pages/Reconciliation";
+import InquryScreen from "./Pages/inquiry";
 
 function Routing() {
   return (
@@ -17,6 +18,7 @@ function Routing() {
         <Route path="/error-processing" element={<ErrorProcessing />} />
         <Route path="/system-config" element={<SystemConfig />} />
         <Route path="/reconciliation" element={<Reconciliation />} />
+        <Route path="/inquiries" element={<InquryScreen />} />
       </Route>
     </Routes>
   );

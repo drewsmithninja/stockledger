@@ -3,7 +3,9 @@ import SendIcon from "@mui/icons-material/Send";
 import DownloadIcon from '@mui/icons-material/Download';
 import UploadIcon from '@mui/icons-material/Upload';
 import ReceiptIcon from '@mui/icons-material/Receipt';
+import RepeatIcon from '@mui/icons-material/Repeat';
 import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
+import HelpIcon from '@mui/icons-material/Help';
 export const GetItems = () => {
   let json = {
     list: [
@@ -47,12 +49,23 @@ export const GetItems = () => {
       },
       {
         id: 4,
-        name: "Reconciliation Processing",
-        icon: <ReceiptIcon sx={{color: "#66cdaa"}}/>,
+        name: "Reconciliation Report",
+        icon: <RepeatIcon sx={{color: "#66cdaa"}}/>,
         subitems: [
           {
             id: 1,
             name: "Reconciliation",
+          },
+        ],
+      },
+      {
+        id: 5,
+        name: "Inquiry Process",
+        icon: <HelpIcon sx={{color: "#66cdaa"}}/>,
+        subitems: [
+          {
+            id: 1,
+            name: "Inquiries",
           },
         ],
       },

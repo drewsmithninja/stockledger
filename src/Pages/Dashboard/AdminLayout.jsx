@@ -139,6 +139,9 @@ export default function Index() {
     if(routeName === "Reconciliation"){
       navigate("/reconciliation");
     }
+    if(routeName === "Inquiries"){
+      navigate("/inquiries");
+    }
   };
   const handleHomePage = (routedata) => {
     if (routedata == "Home") {

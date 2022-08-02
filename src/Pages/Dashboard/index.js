@@ -10,10 +10,10 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import CircularProgress from "@mui/material/CircularProgress";
 
 const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+  backgroundColor: "#d9d9d9",
   ...theme.typography.body2,
   padding: theme.spacing(2),
-  textAlign: "center",
+  textAlign: "left",
   color: theme.palette.text.secondary,
 }));
 

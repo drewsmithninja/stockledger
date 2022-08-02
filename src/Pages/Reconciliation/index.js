@@ -9,19 +9,21 @@ import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import Modal from '@mui/material/Modal';
 import Autocomplete from '@mui/material/Autocomplete';
-import IconButton from "@mui/material/IconButton";
-import FormControl from "@mui/material/FormControl";
 import Typography from '@mui/material/Typography';
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import Drawer from "@mui/material/Drawer";
 import { makeStyles } from "@mui/styles";
-import { getErrorProcessingRequest, postErrorProcessingRequest, getClassDataRequest, getLocationDataRequest } from "../../Redux/Action/errorProcessing";
+import { getDailySkuRollupDataRequest,getDeptRecDataRequest,getLocationRecDataRequest } from "../../Redux/Action/reconciliation";
 import CircularProgress from "@mui/material/CircularProgress";
 import { headCells } from "./tableHead";
 import SearchIcon from '@mui/icons-material/Search';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import SendIcon from '@mui/icons-material/Send';
 import { trnType } from "../../Components/ErrorProcessing/transType";
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import { CSVLink } from "react-csv";
 
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -32,14 +34,18 @@ const useStyles = makeStyles({
     position: "relative",
     width: "calc(95vw - 0px)",
     '& table':{
+      '& thead': {
+        '& th:nth-child(1)':{
+          display: 'none'
+       },
+       },
       '& tr':{
-            // '& th:nth-child(1)':{
-            //     display: 'none'
-            //  },
-             
-            // '& td:nth-child(1)':{
-            //       display: 'none'
-            // }
+            '& th:nth-child(1)':{
+                display: 'none'
+             },
+            '& td:nth-child(1)':{
+                  display: 'none'
+            }
       }
   }
 },  boxDiv: {
@@ -65,6 +71,10 @@ const useStyles = makeStyles({
         color:  "rgba(102,102,102,1)",
       }
   },
+  downloadBtn:{
+    color: 'white',
+    textDecoration: 'none',
+  },
   popUp: {
     position: 'absolute',
     top: '50%',
@@ -83,7 +93,7 @@ const initialsearch = {
   LOCATION: [],
   TRN_TYPE: [],
   AREF: [],
-  TRN_DATE: "",
+  TRN_POST_DATE: "",
 }
 
 const initialItemData = {
@@ -107,7 +117,7 @@ const Reconciliation = () => {
   const [searchData, setSearchData] = useState(initialsearch);
   const [isError, setIsError] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [isSubmit, setSubmit] = useState(false);
+  const [sort, setSort] = useState(1);
   const [open, setOpen] = useState(false);
   const [state, setState] = React.useState({
     top: false,
@@ -116,10 +126,11 @@ const Reconciliation = () => {
     right: false,
   });
   const ErrorProceesClasses = useStyles();
-  const ErrorProcessingData = useSelector(
-    (state) => state.ErrorProcessingReducers
+  const DailySkuRollupData = useSelector(
+    (state) => state.ReconciliationReducers
   );
-  console.log(ErrorProcessingData);
+
+  console.log(DailySkuRollupData);
   const dispatch = useDispatch();
 
   const toggleDrawer = (anchor, open) => (event) => {
@@ -134,48 +145,32 @@ const Reconciliation = () => {
     if(datatable.length > 0){
       datatable.map( item => {
           const reorder = {
-            'ITEM' : null,
-            'ERR_MSG': null,
-            'ITEM_DESC': null,
             'DEPT': null,
-            'DEPT_DESC': null,
-            'CLASS': null,
-            'CLASS_DESC': null,
-            'SUBCLASS':null,
-            'SUBCLASS_DESC': null,
-            'LOCATION_TYPE': null,
             'LOCATION': null,
-            'LOCATION_NAME': "",
-            'TRN_DATE': "",
             'TRN_NAME': "",
+            'TRN_POST_DATE': "",
             'QTY': "",
-            'UNIT_COST': "",
-            'UNIT_RETAIL': "",
-            'TOTAL_COST': "",
-            'TOTAL_RETAIL': "",
-            'REF_NO1': "",
-            'REF_NO2': "",
-            'REF_NO3': "",
-            'REF_NO4': "",
-            'CURRENCY': "",
-            'ERR_SEQ_NO': null,
-            'TRAN_SEQ_NO': null,
-            'TRN_TYPE': "",
-            'AREF': null,
+            'COST': "",
+            'RETAIL': "",
+            'ROLLED_QTY': "",
+            'ROLLED_COST': "",
+            'ROLLED_RETAIL': "",
+            'QTY_MATCHED': "",
+            'COST_MATCHED': "",
+            'RETAIL_MATCHED': ""
           }
           parseFloat(item.LOCATION?.toFixed(1));
-          delete item?.PROCESS_IND;
-          delete item?.SELLING_UOM;
-          delete item?.TRN_POST_DATE;
-          delete item?.REF_ITEM;
-          delete item?.REF_ITEM_TYPE;
-          delete item?.PACK_QTY;
-          delete item?.PACK_COST;
-          delete item?.PACK_RETAIL;
-          delete item?.CREATE_ID;
-          delete item?.CREATE_DATETIME;
-          delete item?.REV_NO;
-          delete item?.REV_TRN_NO;
+          parseFloat(item.QTY?.toFixed(1));
+          parseFloat(item.COST?.toFixed(1));
+          parseFloat(item.RETAIL?.toFixed(1));
+          parseFloat(item.ROLLED_QTY?.toFixed(1));
+          parseFloat(item.ROLLED_COST?.toFixed(1));
+          parseFloat(item.ROLLED_RETAIL?.toFixed(1));
+          delete item.DEPT_DESC;
+          delete item.LOCATION_NAME;
+          delete item.AREF;
+          delete item.TRN_TYPE;  
+
             let test = Object.assign(reorder,item);
             newTabledata.push(test); 
     })
@@ -197,56 +192,46 @@ const Reconciliation = () => {
   }, [inputValue]);
 
   useEffect(() => {
-    if (ErrorProcessingData.isError) {
+    if (DailySkuRollupData.isError) {
       setIsError(true)
-    }else if(ErrorProcessingData.isSuccess){
+      setSearch(false);
+    }else if(DailySkuRollupData.isSuccess){
       setIsSuccess(true);
     }else {
       setIsError(false)
       setTabledata("")
     }
-  }, [ErrorProcessingData])
-
-  useEffect(() => { 
-    if(isSubmit){
-      setTimeout(() => {
-        dispatch(getErrorProcessingRequest([searchData])) 
-      },3000)
-    }
-},[isSubmit]);
+  }, [DailySkuRollupData])
 
 useEffect(() => {
   if(isSearch){
-    dispatch(getErrorProcessingRequest([searchData])) 
+    dispatch(getDailySkuRollupDataRequest([searchData])) 
   }
 },[isSearch])
 
 useEffect(()=> {
   setLoading(true);
-  dispatch(getClassDataRequest([{}]));
-  dispatch(getLocationDataRequest([{}]));
+  dispatch(getDeptRecDataRequest([{}]));
+  dispatch(getLocationRecDataRequest([{}]));
 },[''])
 
   useEffect(() => {
-        if(ErrorProcessingData?.data?.Data && Array.isArray(ErrorProcessingData?.data?.Data)){
-          setTabledata(serializedata(ErrorProcessingData?.data?.Data));
-          setAllData(serializedata(ErrorProcessingData?.data?.Data));
+        if(DailySkuRollupData?.data?.Data && Array.isArray(DailySkuRollupData?.data?.Data)){
+          setTabledata(serializedata(DailySkuRollupData?.data?.Data));
+          setAllData(serializedata(DailySkuRollupData?.data?.Data));
           setLoading(false);
-          setSubmit(false);
           setSearch(false);
-        }else if(ErrorProcessingData?.data?.itemData && Array.isArray(ErrorProcessingData?.data?.itemData)){
-          setItemData(ErrorProcessingData?.data?.itemData);
+        }else if(DailySkuRollupData?.data?.itemData && Array.isArray(DailySkuRollupData?.data?.itemData)){
+          setItemData(DailySkuRollupData?.data?.itemData);
           setLoading(false);
-        }else if(ErrorProcessingData?.data?.locationData && Array.isArray(ErrorProcessingData?.data?.locationData)){
-          setLocationData(ErrorProcessingData?.data?.locationData);
+        }else if(DailySkuRollupData?.data?.locationData && Array.isArray(DailySkuRollupData?.data?.locationData)){
+          setLocationData(DailySkuRollupData?.data?.locationData);
           setLoading(false);
         }else {
           setSearch(false)
         }
         
-  },[ErrorProcessingData?.data])
-
-
+  },[DailySkuRollupData?.data])
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -264,38 +249,10 @@ useEffect(()=> {
     }
   };
 
-  const SubmitList = () => {
-    console.log(updateRow);
-    if(Object.keys(updateRow).length > 0){
-      let sendRow = Object.values(updateRow);
-      sendRow.map((item)=> {
-          delete item?.ITEM_DESC;
-          delete item?.DEPT_DESC;
-          delete item?.CLASS_DESC;
-          delete item?.SUBCLASS_DESC;
-          delete item?.TRN_NAME;
-          delete item?.LOCATION_NAME;
-          delete item?.undefined;
-      })
-      console.log(sendRow);
-    setLoading(true);
-    dispatch(postErrorProcessingRequest(sendRow));
-    initialsearch.DEPT = [];
-    initialsearch.LOCATION = [];
-    initialsearch.TRN_TYPE= [];
-    initialsearch.TRN_DATE= [];
-    initialsearch.AREF = [];
-    setSearchData(initialsearch);
-    setSubmit(true);
-    seteditRows([]);
-    }else{
-      setOpen(true)
-    }
-    
-  };
 const handleSubmit = (event) => {
   event.preventDefault();
     setSearch(true);
+    setSort(1);
     setState({ ...state, 'right': open });
 }
 
@@ -318,10 +275,11 @@ const onReset = (event) => {
     initialsearch.DEPT = [];
     initialsearch.LOCATION = [];
     initialsearch.TRN_TYPE= [];
-    initialsearch.TRN_DATE= [];
+    initialsearch.TRN_POST_DATE= [];
     initialsearch.AREF = [];
       setSearchData(initialsearch)
       setSearch(false);
+      setSort(1);
       setTabledata("");
 
 }
@@ -329,7 +287,6 @@ const onReset = (event) => {
 const selectDept = (event, value) => {
   let selectedDept = [];
   if(value.length > 0){
-    console.log(itemData);
   const filterClass = itemData.filter((item) => { return value.some((val) => { return item.DEPT === val.DEPT})});
     console.log(filterClass);
 
@@ -411,7 +368,67 @@ const selectLocation = (event, value) => {
   }
 
  }
-console.log(searchData);
+console.log(searchData,tabledata);
+
+const headers = [
+  {label:"DEPT", key: "DEPT"},
+  {label:"LOCATION", key: "LOCATION"},
+  {label:"TRN TYPE", key: "TRN_NAME"},
+  {label:"END OF PERIOD", key: "TRN_POST_DATE"},
+  {label:"QTY", key: "QTY"},
+  {label:"COST", key: "COST"},
+  {label:"RETAIL", key: "RETAIL"},
+  {label:"ROLLED QTY", key: "ROLLED_QTY"},
+  {label:"ROLLED COST", key: "ROLLED_COST"},
+  {label:"ROLLED RETAIL", key: "ROLLED_RETAIL"},
+  {label:"QTY MATCHED", key: "QTY_MATCHED"},
+  {label:"COST MATCHED", key: "COST_MATCHED"},
+  {label:"RETAIL MATCHED", key: "RETAIL_MATCHED"}]
+
+  const data = tabledata; 
+
+  const csvReport = {
+    data: data,
+    headers: headers,
+    filename: 'ReconciliationReport.csv'
+  };
+
+
+const handleSort = (event) => {
+  setSort(event.target.value);
+  let sortval = event.target.value;
+  let sortData = [];
+    if(tabledata.length > 0){
+    if(sortval == 2){
+      
+          sortData = allData.filter((item) => {
+                return  item.QTY_MATCHED == 'Y' &&
+                        item.COST_MATCHED == 'Y' &&
+                        item.RETAIL_MATCHED == 'Y'
+          })
+          console.log("matched",sortData);
+          setTabledata(sortData);
+          setSort(sortval);
+    }else if(sortval == 3){
+      sortData = allData.filter((item) => {
+        return  item.QTY_MATCHED == 'N' &&
+                item.COST_MATCHED == 'N' &&
+                item.RETAIL_MATCHED == 'N'
+  })        
+         setTabledata(sortData);   
+         setSort(sortval);
+    }else{
+          setTabledata(allData);
+          setSort(1);
+    }
+  }
+
+};
+
+
+
+
+
 const searchPanel = () => (
   <Box
     sx={{ width: 350, marginTop: '80px'}}
@@ -499,11 +516,11 @@ const searchPanel = () => (
               margin="normal"
               size="small"
               variant="standard" 
-              name="TRN_DATE"
-              label="TRN DATE"
+              name="TRN_POST_DATE"
+              label="TRN POST DATE"
               type="date"
-              inputProps={{ max:"2022-07-27"}}
-              value={searchData.TRN_DATE}
+              inputProps={{ max:"2022-07-31"}}
+              value={searchData.TRN_POST_DATE}
               onChange={onChange}
               sx={{ width: 250 }}
               style={{
@@ -536,9 +553,7 @@ const searchPanel = () => (
             </Grid>
   </Box>
 );
-let tableData = [{"DEPT": "1", "LOCATION": "71", "TRN_TYPE": "SLS", "END_OF_PERIOD": "20-07-2022", "QTY": 10, "COST": 500, "RETAIL": 4500, "ROLLED_QTY": 10, "ROLLED_COST": 500, "ROLLED_RETAIL": 4500, "QTY_MATCHED": "", "COST_MATCHED": "", "RETAIL_MATCHED": ""}
-,{"DEPT": "2", "LOCATION": "72", "TRN_TYPE": "ITO", "END_OF_PERIOD": "22-07-2022", "QTY": 15, "COST": 200, "RETAIL": 1500, "ROLLED_QTY": 1, "ROLLED_COST": 300, "ROLLED_RETAIL": 4500, "QTY_MATCHED": "", "COST_MATCHED": "", "RETAIL_MATCHED": ""}]
-  return (
+return (
     <Box className={ErrorProceesClasses.maindiv}>
       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         <Grid item xs={6}>
@@ -553,13 +568,38 @@ let tableData = [{"DEPT": "1", "LOCATION": "71", "TRN_TYPE": "SLS", "END_OF_PERI
               justifyContent="flex-end"
               alignItems="flex-end" className={ErrorProceesClasses.boxDiv}>
             <div className={ErrorProceesClasses.uploaddiv}>
-              {(Object.keys(updateRow).length > 0) && 
-            <Button variant="contained" sx={{marginTop: '15px'}} onClick={SubmitList} startIcon={<SendIcon />}>
-                  Submit
-              </Button> 
-                  }
-       
+              { (tabledata.length > 0) &&
+              <>
+            <div>
+            <Button variant="contained" sx={{ marginTop: '15px', textAlign:'right' }}>
+              <CSVLink {...csvReport} className={ErrorProceesClasses.downloadBtn}>Export to CSV</CSVLink>
+              </Button>
+              </div>
+
+            <div style={{marginTop:'20px'}}>
+             <FormControl >
+              <InputLabel id="demo-simple-select-label" style={{width: "100px"}}>Sort</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={sort}
+                label="Sort"
+                size="small"
+                onChange={handleSort}
+                sx={{ width:"160px"}}
+              >
+                <MenuItem value={1}>All</MenuItem>
+                <MenuItem value={2}>All Matched</MenuItem>
+                <MenuItem value={3}>All Unmatched</MenuItem>
+              </Select>
+            </FormControl>
+            </div>
+            </>
+        }
+        
+          <div>
           <Button variant="contained" sx={{ marginTop: '15px', textAlign:'right' }} onClick={toggleDrawer('right', true)} startIcon={<SearchIcon />}>Search</Button>
+          </div>
           <Drawer
             anchor={'right'}
             open={state['right']}
@@ -578,7 +618,7 @@ let tableData = [{"DEPT": "1", "LOCATION": "71", "TRN_TYPE": "SLS", "END_OF_PERI
                 ) : (
         tabledata &&
         <Table
-          tableData={tableData}
+          tableData={tabledata}
           //handleDelete={handleDelete}
           handleSearch={handleChange}
           searchText={inputValue}
@@ -597,10 +637,10 @@ let tableData = [{"DEPT": "1", "LOCATION": "71", "TRN_TYPE": "SLS", "END_OF_PERI
         <Snackbar open={isError || isSuccess} autoHideDuration={3000} onClose={handleMsgClose}>
           <Alert
             onClose={handleMsgClose}
-            severity={ErrorProcessingData?.isSuccess ? "success" : "error"}
+            severity={DailySkuRollupData?.isSuccess ? "success" : "error"}
             sx={{ width: "100%" }}
           >
-          {ErrorProcessingData?.messgae?ErrorProcessingData?.messgae:'Data Successfully Fetched'}
+          {DailySkuRollupData?.messgae?DailySkuRollupData?.messgae:'Data Successfully Fetched'}
           </Alert>
           </Snackbar>
       </Stack>

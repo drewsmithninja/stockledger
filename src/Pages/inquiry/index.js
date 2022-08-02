@@ -13,16 +13,12 @@ import Typography from '@mui/material/Typography';
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import Drawer from "@mui/material/Drawer";
 import { makeStyles } from "@mui/styles";
-import { getSystemConfigRequest, postSystemConfigRequest } from "../../Redux/Action/systemConfig";
+import { getInquiryDataRequest } from "../../Redux/Action/inquiry";
 import CircularProgress from "@mui/material/CircularProgress";
 import { headCells } from "./tableHead";
 import SearchIcon from '@mui/icons-material/Search';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import SendIcon from '@mui/icons-material/Send';
-import { trnType } from "../../Components/ErrorProcessing/transType.js";
-import Chip from '@mui/material/Chip';
 
-//import "./index.css";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -32,14 +28,19 @@ const useStyles = makeStyles({
     position: "relative",
     width: "calc(95vw - 0px)",
     '& table':{
+      '& thead': {
+        '& th:nth-child(1)':{
+          display: 'none'
+       },
+       },
       '& tr':{
-            '& td:nth-child(2)':{
+            '& td:nth-child(1)':{
                   display: 'none'
             },
-            '& td:nth-child(4)':{
+            '& td:nth-child(29)':{
               display: 'none'
            },
-           '& td:nth-child(14)':{
+           '& td:nth-child(30)':{
              display: 'none'
           }
       }
@@ -81,11 +82,11 @@ const useStyles = makeStyles({
 });
 
 const initialsearch = {
-  TRN_TYPE: [] || "",
-  AREF: [] || "",
+  USER: "",
+  DATE: "",
 }
 
-const SystemConfig = () => {
+const InquryScreen = () => {
   const [tabledata, setTabledata] = useState("");
   const [inputValue, setInputValue] = useState();
   const [allData, setAllData] = useState("");
@@ -96,9 +97,7 @@ const SystemConfig = () => {
   const [searchData, setSearchData] = useState(initialsearch);
   const [isError, setIsError] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [isSubmit, setSubmit] = useState(false);
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState([]);
   const [state, setState] = React.useState({
     top: false,
     left: false,
@@ -107,7 +106,7 @@ const SystemConfig = () => {
   });
   const ErrorProceesClasses = useStyles();
   const ErrorProcessingData = useSelector(
-    (state) => state.SystemConfigReducers
+    (state) => state.InquiryReducers
   );
   console.log(ErrorProcessingData);
   const dispatch = useDispatch();
@@ -121,26 +120,43 @@ const SystemConfig = () => {
 
   const serializedata = (datatable) => {
     let newTabledata = [];
-    let count = 1;
     if(datatable.length > 0){
       datatable.map( item => {
-        item['SR_NO']= count;
           const reorder = {
-            'TRN_TYPE':"",
-            'TRN_NAME': "",
-            'AREF': "",
-            'STCK_LDGR_APPL': "",
-            'SOH_IMPACT': "",
-            "COST_USED": "",
-            'PERIOD_INVT_TRAN':"",
-            'INJECT_PERIOD': "",
-            'OVERRIDE_ACCUMULATE': "",
-            'HIER_LEVEL':"",
-            'FIN_APPL': "",
-            'ACCT_REFERENCE': ""
+            'ITEM' : null,
+            'ERR_MSG': null,
+            'DEPT': null,
+            'CLASS': null,
+            'SUBCLASS':null,
+            'LOCATION_TYPE': null,
+            'LOCATION': null,
+            'TRN_TYPE': "",
+            'QTY': "",
+            'UNIT_COST': "",
+            'UNIT_RETAIL': "",
+            'TOTAL_COST': "",
+            'TOTAL_RETAIL': "",
+            'REF_NO1': "",
+            'REF_NO2': "",
+            'REF_NO3': "",
+            'REF_NO4': "",
+            'CURRENCY': "",
+            'ERR_SEQ_NO': null,
+            'TRAN_SEQ_NO': null
           }
-          count++;
-
+          delete item?.PROCESS_IND;
+          delete item?.SELLING_UOM;
+          delete item?.TRN_POST_DATE;
+          delete item?.REF_ITEM;
+          delete item?.REF_ITEM_TYPE;
+          delete item?.PACK_QTY;
+          delete item?.PACK_COST;
+          delete item?.PACK_RETAIL;
+          delete item?.CREATE_ID;
+          delete item?.CREATE_DATETIME;
+          delete item?.REV_NO;
+          delete item?.rev_trn_no;
+          delete item?.AREF;
             let test = Object.assign(reorder,item);
             newTabledata.push(test); 
     })
@@ -172,26 +188,19 @@ const SystemConfig = () => {
     }
   }, [ErrorProcessingData])
 
-  useEffect(() => { 
-    if(isSubmit){
-      setTimeout(() => {
-        dispatch(getSystemConfigRequest([searchData])) 
-      },500)
-    }
-},[isSubmit]);
 
 useEffect(() => {
   if(isSearch){
-    dispatch(getSystemConfigRequest([searchData])) 
+    dispatch(getInquiryDataRequest([searchData])) 
   }
 },[isSearch])
+
 
   useEffect(() => {
         if(ErrorProcessingData?.data?.Data && Array.isArray(ErrorProcessingData?.data?.Data)){
           setTabledata(serializedata(ErrorProcessingData?.data?.Data));
           setAllData(serializedata(ErrorProcessingData?.data?.Data));
           setLoading(false);
-          setSubmit(false);
           setSearch(false);
         }else {
           setSearch(false)
@@ -217,37 +226,20 @@ useEffect(() => {
     }
   };
 
-  const SubmitList = () => {
-    console.log(updateRow);
-    if(Object.keys(updateRow).length > 0){
-      let sendRow = Object.values(updateRow);
-      sendRow.map((item)=> {
-          delete item?.TRN_NAME;
-          delete item?.undefined;
-          delete item?.SR_NO;
-          if(item?.ACCT_REFERENCE == null){
-            item['ACCT_REFERENCE']= "";
-          }
-      })
-      console.log("updateRow",sendRow);
-    setLoading(true);
-    dispatch(postSystemConfigRequest(sendRow));
-    initialsearch.TRN_TYPE= [] || "";
-    initialsearch.AREF = [] || "";
-    setSearchData(initialsearch);
-    setSubmit(true);
-    seteditRows([]);
-    }else{
-      setOpen(true)
-    }
-    
-  };
 const handleSubmit = (event) => {
   event.preventDefault();
     setSearch(true);
     setState({ ...state, 'right': open });
 }
 
+const onChange = (e) => {
+  setSearchData((prev) => {
+    return {
+      ...prev,
+      [e.target.name]: e.target.value,
+    };
+  });
+}
 
 const handleMsgClose = () => {
   setIsError(false)
@@ -255,47 +247,17 @@ const handleMsgClose = () => {
 }
 
 const onReset = (event) => {
-
-    initialsearch.TRN_TYPE= [];
-    initialsearch.AREF = [];
+    initialsearch.USER= "";
+    initialsearch.DATE= "";
     console.log('datainitial',initialsearch);
-      setSearchData(initialsearch)
+      setSearchData(initialsearch)      
       console.log('data',searchData);
       setSearch(false);
       setTabledata("");
 
 }
- const selectTrantype = (event, value) => {
-   console.log(value);
-  let selectedTrantype = [];
-  let selectedAref = [];
-  if(value.length > 0){
-    value.map(
-      (item) => {
-        selectedTrantype.push(item.TRN_TYPE);
-        selectedAref.push(item.AREF)
-      }
-    )
-    setSearchData((prev) => {
-      return {
-        ...prev,
-        TRN_TYPE : selectedTrantype,
-        AREF: selectedAref
-      };
-    });
-  }else{
-    setSearchData((prev) => {
-      return {
-        ...prev,
-        TRN_TYPE : [],
-        AREF: []
-      };
-    });
-  }
 
- }
 console.log(searchData);
-console.log(tabledata)
 const searchPanel = () => (
   <Box
     sx={{ width: 350, marginTop: '80px'}}
@@ -303,45 +265,39 @@ const searchPanel = () => (
     component="form"
     onSubmit={handleSubmit}
   > <Grid item xs={12} sx={{display:'flex', justifyContent:'center', marginTop: '15px'}}>
-         <Stack spacing={2} sx={{ width: 250 }}>     
-            <Autocomplete
-              multiple
-              disablePortal
+         <Stack spacing={2} sx={{ width: 250 }}>
+         
+            <TextField
+              className={ErrorProceesClasses.textField}
+              disabled
+              margin="normal"
               size="small"
-              id="combo-box-trn-type"
-              onChange={selectTrantype}
-              options={trnType}
-              getOptionLabel={(option) => option.TRN_NAME}
+              variant="standard" 
+              name="USER"
+              label="User"
+              type="text"
               sx={{ width: 250 }}
-              renderInput={(params) => <TextField {...params} label="TRN TYPE" variant="standard" />}
+              value={JSON.parse(localStorage.getItem("userData"))?.username}
             />
-{/* 
-<Autocomplete
-        value={value}
-        onChange={(event, newValue) => {
-          console.log(newValue);
-          setValue(newValue);
-        }}
-        multiple
-        id="tags-filled"
-        options={trnType.map((option) => option.TRN_NAME)}
-        renderTags={(value, getTagProps) =>
-          value.map((option,index) => (
-            <Chip
-              variant="filled"
-              label={option}
-              {...getTagProps({ index })}
+             <TextField
+              className={ErrorProceesClasses.dateField}
+              margin="normal"
+              size="small"
+              variant="standard" 
+              name="DATE"
+              label="DATE"
+              type="date"
+              inputProps={{ max:"2022-08-01"}}
+              value={searchData.DATE}
+              onChange={onChange}
+              sx={{ width: 250 }}
+              style={{
+                color: "#D3D3D3",
+              }}
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
-          ))
-        }
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            variant="standard"
-            label="TRN_TYPE"
-          />
-        )}
-      /> */}
             <div>
             <Button
               className={ErrorProceesClasses.textField}
@@ -372,7 +328,7 @@ const searchPanel = () => (
         <Grid item xs={6}>
           <Box className={ErrorProceesClasses.boxDiv}>
             <div className={ErrorProceesClasses.uploaddiv}>
-              <h4>System Config</h4>
+              <h4>Inquiries</h4>
             </div>
           </Box>
         </Grid>
@@ -381,12 +337,6 @@ const searchPanel = () => (
               justifyContent="flex-end"
               alignItems="flex-end" className={ErrorProceesClasses.boxDiv}>
             <div className={ErrorProceesClasses.uploaddiv}>
-              {(Object.keys(updateRow).length > 0) && 
-            <Button variant="contained" sx={{marginTop: '15px'}} onClick={SubmitList} startIcon={<SendIcon />}>
-                  Submit
-              </Button> 
-                  }
-       
           <Button variant="contained" sx={{ marginTop: '15px', textAlign:'right' }} onClick={toggleDrawer('right', true)} startIcon={<SearchIcon />}>Search</Button>
           <Drawer
             anchor={'right'}
@@ -417,7 +367,7 @@ const searchPanel = () => (
           headCells={headCells}
           setTabledata={setTabledata}
           allData={allData}
-          pageName="config"
+          pageName="inquiry"
         />
       )}
 
@@ -428,7 +378,8 @@ const searchPanel = () => (
             severity={ErrorProcessingData?.isSuccess ? "success" : "error"}
             sx={{ width: "100%" }}
           >
-          {ErrorProcessingData?.messgae?ErrorProcessingData?.messgae:'Data Successfully Fetched'}
+          {(isSuccess === true)?(ErrorProcessingData?.messgae)?ErrorProcessingData?.messgae:'Data Successfully Fetched':''}
+          {(isError === true)?(ErrorProcessingData?.messgae)?ErrorProcessingData?.messgae:'Data Not Found':''}
           </Alert>
           </Snackbar>
       </Stack>
@@ -452,4 +403,4 @@ const searchPanel = () => (
   );
 };
 
-export default SystemConfig;
+export default InquryScreen;

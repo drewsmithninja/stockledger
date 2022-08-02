@@ -9,4 +9,6 @@ export const API = {
   DAILYCOUNTDATA: "/count_pending/",
   STAGECOUNTDATA: "/count_stg_trn/",
   ERRORCOUNTDATA: "/count_trn/",
+  FETCHDAILYRECDATA: "/daily_rec/",
+  FETCHERRSTAGESATA: "/retrieve_err_stg_data/",
 };

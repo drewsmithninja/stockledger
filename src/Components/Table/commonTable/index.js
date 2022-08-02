@@ -59,7 +59,7 @@ const CommonTable = ({
 
     const [updateData, setupdateData] = useState({});  
     const rowClasses = useStyles();  
-  console.log(editRows);
+
   // const onBlur = (event, value , row) => {
   //   console.log("test", event.target.value, value, row);
   //   row[event.target.name] = event.target.value;
@@ -137,7 +137,7 @@ const CommonTable = ({
   return (
     <>
       <Paper sx={{ maxWidth: "fit-content", maxHeight: "fit-content", mb: 2 }}>
-      {(pageName != "stage") &&
+      {(pageName != "stage" && pageName != 'reconciliation' && pageName != 'inquiry') &&
         <TableToolbar selected={selected} handledelete={handleDelete} edithandle={handleEdit} seteditRows={seteditRows} setUpdateRow={setUpdateRow} setSelected={setSelected} editRows={editRows} setupdateData={setupdateData} setTabledata={setTabledata} allData={allData}/>
         } 
         <TableContainer sx={{ overflowX: "scroll", overflowY: "scroll",height: "fit-content", maxHeight: "70vh" }}>
@@ -247,18 +247,28 @@ const CommonTable = ({
                       {Object.entries(row).map(([key, value])=> {
                           let colorcode = "";
                           if(pageName == "reconciliation"){
-                            row['QTY_MATCHED'] = (row['QTY'] === row['ROLLED_QTY'])?"Y":"N";
-                            row['COST_MATCHED'] = (row['COST'] === row['ROLLED_COST'])?"Y":"N";
-                            row['RETAIL_MATCHED'] = (row['RETAIL'] === row['ROLLED_RETAIL'])?"Y":"N";
-                              if(key== 'QTY' && key== 'ROLLED_QTY'){
-                                if(row['QTY_MATCHED'] == "N")
-                                    colorcode = "#FFFF00";
-                                    console.log("test");
-                              }
+                            if(key == "QTY"){
+                                colorcode = (row['QTY_MATCHED'] == 'N')?"lightyellow":"";
+                            } 
+                            if(key == "ROLLED_QTY"){
+                              colorcode = (row['QTY_MATCHED'] == 'N')?"lightyellow":"";
+                            }
+                            if(key == "COST"){
+                              colorcode = (row['COST_MATCHED'] == 'N')?"lightyellow":"";
+                             } 
+                           if(key == "ROLLED_COST"){
+                            colorcode = (row['COST_MATCHED'] == 'N')?"lightyellow":"";
+                            }
+                            if(key == "RETAIL"){
+                            colorcode = (row['RETAIL_MATCHED'] == 'N')?"lightyellow":"";
+                            } 
+                            if(key == "ROLLED_RETAIL"){
+                            colorcode = (row['RETAIL_MATCHED'] == 'N')?"lightyellow":"";
+                            } 
                           }
                           return (<TableCell align="left" key={key} className={rowClasses.tabCell} sx={((key == 'SR_NO')?'display:none':'')} 
-                          style={{background:((colorcode)?`${colorcode}`:'')}}>
-                              {value || "" }
+                          style={{background:((colorcode)?`${colorcode}`:''),color:((colorcode)?`Red`:``)}}>
+                              {(value == "NULL")?"":value }
                           </TableCell> )
                       }
                       )}

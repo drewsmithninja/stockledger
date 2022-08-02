@@ -695,7 +695,7 @@ const searchPanel = () => (
               isOptionEqualToValue={(option, value) => option.ITEM === value.ITEM}
               autoHighlight
               onChange={selectItem}
-              getOptionLabel={(option) => `${option.ITEM.toString()}-${option.ITEM.toString()}`}
+              getOptionLabel={(option) => `${option.ITEM.toString()}-${option.ITEM_DESC.toString()}`}
               renderOption={(props, option) => (
                 <Box component="li" {...props}>
                   {option.ITEM} {option.ITEM_DESC}
