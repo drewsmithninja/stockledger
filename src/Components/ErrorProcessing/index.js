@@ -176,6 +176,7 @@ const ErrorProcessing = () => {
             'AREF': null,
           }
           parseFloat(item.LOCATION?.toFixed(1));
+          parseInt(item?.DEPT);
           delete item?.PROCESS_IND;
           delete item?.SELLING_UOM;
           delete item?.TRN_POST_DATE;
@@ -365,8 +366,9 @@ const selectDept = (event, value) => {
     console.log(itemData);
   const filterClass = itemData.filter((item) => { return value.some((val) => { return item.DEPT === val.DEPT})});
     console.log(filterClass);
+    let UniqClass = (filterClass.length > 0 )?[...new Map(filterClass.map((item) => [item["CLASS"], item])).values()]:[];
     //const classFilter = (filterClass.length > 0 )?[...new Set(filterClass.map(item => item.CLASS))]:[];
-    setFilterClass(filterClass);
+    setFilterClass(UniqClass);
 
     value.map(
       (item) => {
@@ -398,8 +400,10 @@ const selectClass = (event,value) => {
   if(value.length > 0){
     //const subclassFilter = (filterSubClass.length > 0 )?[...new Set(filterSubClass.map(item => item.SUBCLASS))]:[];
     const filterSubClass = itemData.filter((item) => { return value.some((val) => { return item.CLASS === val.CLASS})});  
-    console.log(filterSubClass);
-   setsubFilterClass(filterSubClass)
+    let UniqSubClass = (filterSubClass.length > 0 )?[...new Map(filterSubClass.map((item) => [item["SUBCLASS"], item])).values()]:[];
+    
+    console.log(UniqSubClass);
+   setsubFilterClass(UniqSubClass)
    value.map(
     (item) => {
       selectedClass.push(item.CLASS);
@@ -554,7 +558,9 @@ const selectError = (event, value) => {
   }
 
  }
-console.log(searchData);
+
+ let UniqDept = (itemData.length > 0 )?[...new Map(itemData.map((item) => [item["DEPT"], item])).values()]:[];
+ 
 const searchPanel = () => (
   <Box
     sx={{ width: 350, marginTop: '80px'}}
@@ -600,7 +606,7 @@ const searchPanel = () => (
               size="small"
               id="combo-box-item"
               sx={{ width: 250 }}
-              options={(itemData.length > 0)?itemData:[]}
+              options={(UniqDept.length > 0)?UniqDept:[]}
               //value={searchData?.DEPT}
               isOptionEqualToValue={(option, value) => option.DEPT === value.DEPT}
               autoHighlight
@@ -614,7 +620,6 @@ const searchPanel = () => (
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  value={searchData?.ITEM}
                   variant="standard" 
                   label="Choose a DEPT"
                   inputProps={{

@@ -22,7 +22,7 @@ export const headCells = [
   },
   {
     id: "DEPT",
-    numeric: false,
+    numeric: true,
     disablePadding: true,
     label: "DEPT",
     width: "100%",

@@ -64,6 +64,11 @@ export default function EnhancedTable({
       const newSelecteds = stageData?.map((value) => {
         return value['SR_NO']?value['SR_NO']:value['TRAN_SEQ_NO'];
       });
+      
+
+      // const newSelecteds = stableSort(stageData, getComparator(order, orderBy))
+      // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+      // .map((value) => {  return value['SR_NO']?value['SR_NO']:value['TRAN_SEQ_NO'];});
       setSelected(newSelecteds);
       return;
     }

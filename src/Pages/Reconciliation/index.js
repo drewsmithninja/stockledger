@@ -213,6 +213,14 @@ useEffect(()=> {
   setLoading(true);
   dispatch(getDeptRecDataRequest([{}]));
   dispatch(getLocationRecDataRequest([{}]));
+
+  return () =>{
+    setAllData([]);
+    setTabledata([]);
+    setSearchData({});
+    console.log("unmount",allData);
+  }
+
 },[''])
 
   useEffect(() => {
@@ -288,7 +296,8 @@ const selectDept = (event, value) => {
   let selectedDept = [];
   if(value.length > 0){
   const filterClass = itemData.filter((item) => { return value.some((val) => { return item.DEPT === val.DEPT})});
-    console.log(filterClass);
+    
+  console.log(filterClass);
 
     value.map(
       (item) => {
@@ -368,6 +377,7 @@ const selectLocation = (event, value) => {
   }
 
  }
+ let UniqDept = (itemData.length > 0 )?[...new Map(itemData.map((item) => [item["DEPT"], item])).values()]:[];
 console.log(searchData,tabledata);
 
 const headers = [
@@ -398,7 +408,7 @@ const handleSort = (event) => {
   setSort(event.target.value);
   let sortval = event.target.value;
   let sortData = [];
-    if(tabledata.length > 0){
+    if(allData.length > 0){
     if(sortval == 2){
       
           sortData = allData.filter((item) => {
@@ -411,13 +421,14 @@ const handleSort = (event) => {
           setSort(sortval);
     }else if(sortval == 3){
       sortData = allData.filter((item) => {
-        return  item.QTY_MATCHED == 'N' &&
-                item.COST_MATCHED == 'N' &&
+        return  item.QTY_MATCHED == 'N' ||
+                item.COST_MATCHED == 'N' ||
                 item.RETAIL_MATCHED == 'N'
   })        
          setTabledata(sortData);   
          setSort(sortval);
     }else{
+        console.log("Test");
           setTabledata(allData);
           setSort(1);
     }
@@ -443,7 +454,7 @@ const searchPanel = () => (
               size="small"
               id="combo-box-item"
               sx={{ width: 250 }}
-              options={(itemData.length > 0)?itemData:[]}
+              options={(UniqDept.length > 0)?UniqDept:[]}
               //value={searchData?.DEPT}
               isOptionEqualToValue={(option, value) => option.DEPT === value.DEPT}
               autoHighlight
@@ -559,7 +570,7 @@ return (
         <Grid item xs={6}>
           <Box className={ErrorProceesClasses.boxDiv}>
             <div className={ErrorProceesClasses.uploaddiv}>
-              <h4>Reconciliation</h4>
+              <h4>Reconciliation SKU to ROLLUP</h4>
             </div>
           </Box>
         </Grid>
@@ -568,7 +579,7 @@ return (
               justifyContent="flex-end"
               alignItems="flex-end" className={ErrorProceesClasses.boxDiv}>
             <div className={ErrorProceesClasses.uploaddiv}>
-              { (tabledata.length > 0) &&
+              { (allData.length > 0) &&
               <>
             <div>
             <Button variant="contained" sx={{ marginTop: '15px', textAlign:'right' }}>

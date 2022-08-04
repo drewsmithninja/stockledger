@@ -186,6 +186,15 @@ useEffect(() => {
   }
 },[isSearch])
 
+useEffect(() =>{
+  return () => {
+    setAllData([]);
+    setTabledata([]);
+    setSearchData({});
+    console.log("unmount Config",allData);
+  }
+},[])
+
   useEffect(() => {
         if(ErrorProcessingData?.data?.Data && Array.isArray(ErrorProcessingData?.data?.Data)){
           setTabledata(serializedata(ErrorProcessingData?.data?.Data));
@@ -232,9 +241,9 @@ useEffect(() => {
       console.log("updateRow",sendRow);
     setLoading(true);
     dispatch(postSystemConfigRequest(sendRow));
-    initialsearch.TRN_TYPE= [] || "";
-    initialsearch.AREF = [] || "";
-    setSearchData(initialsearch);
+    // initialsearch.TRN_TYPE= [] || "";
+    // initialsearch.AREF = [] || "";
+    //setSearchData(initialsearch);
     setSubmit(true);
     seteditRows([]);
     }else{

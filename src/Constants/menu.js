@@ -6,6 +6,7 @@ import ReceiptIcon from '@mui/icons-material/Receipt';
 import RepeatIcon from '@mui/icons-material/Repeat';
 import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import HelpIcon from '@mui/icons-material/Help';
+import InventoryIcon from '@mui/icons-material/Inventory';
 export const GetItems = () => {
   let json = {
     list: [
@@ -60,12 +61,24 @@ export const GetItems = () => {
       },
       {
         id: 5,
-        name: "Inquiry Process",
+        name: "Transaction Inquiry",
         icon: <HelpIcon sx={{color: "#66cdaa"}}/>,
         subitems: [
           {
             id: 1,
-            name: "Inquiries",
+            name: "Inquiry",
+          },
+        ],
+      },
+      {
+        id: 6,
+        name: "Noninventory",
+        icon: <InventoryIcon sx={{color: "#66cdaa"}}/>,
+        subitems: [
+          {
+            id: 1,
+            name: "upload",
+            icon: <UploadIcon sx={{color: "#66cdaa"}}/>,
           },
         ],
       },

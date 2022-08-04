@@ -68,7 +68,7 @@ const useStyles = makeStyles({
     marginTop: "40px !important",
   }
 });
-const StageProcessing = () => {
+const NonInventory = () => {
   const [tabledata, setTabledata] = useState("");
   const [filterData, setFilterData] = useState("");
   const [isValidExcel, setIsValidExcel] = useState(true);
@@ -246,16 +246,13 @@ const StageProcessing = () => {
     if(isError === true){
       setTabledata(allData);
       setIsError(false);
-    }
-
-
-    
-  }
+    }  }
 
   const tableSearch = (event) => {
       setSearched(event.target.value);
   }
-
+console.log("allData",allData);
+console.log("tableData",allData);
   // Global Search filter
   useEffect(() => {
     if (searched) {
@@ -282,7 +279,7 @@ const StageProcessing = () => {
         <Grid item xs={4}>
           <Box className={StageProceesClasses.boxDiv}>
             <div className={StageProceesClasses.uploaddiv}>
-              <h4>Stage Processing Data</h4>
+              <h4>Non-Inventory Transaction</h4>
               <Button variant="contained" component="label" startIcon={<UploadFileIcon />}>
                 Upload File
                 <input onChange={handleCapture} type="file" hidden />
@@ -471,4 +468,4 @@ const StageProcessing = () => {
   );
 };
 
-export default StageProcessing;
+export default NonInventory;

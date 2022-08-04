@@ -203,8 +203,9 @@ const CommonTable = ({
                               editable = row["ERR_MSG"] === "QTY is null";
                             }if(key == "CURRENCY"){
                               editable = row["ERR_MSG"] === "invalid currency" || row['ERR_MSG'] === "invalid location currency combination";
-                            }if(key == 'TRAN_DATE'){
+                            }if(key == 'TRN_DATE'){
                               editable = row['ERR_MSG'] === "trn_date cannot be in future";
+                              console.log("date",editable);
                             }
                           }
                           if(pageName == "config"){
@@ -232,6 +233,7 @@ const CommonTable = ({
                                 <TextField 
                             disabled={!editable}
                             size="small"
+                            type={(key == 'TRN_DATE')?'date':'text'}
                             variant="standard"
                             className={rowClasses.input}
                             defaultValue={value} name={key} onChange={ (event, value) => onBlur(event,value,row)} />
