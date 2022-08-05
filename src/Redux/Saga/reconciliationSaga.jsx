@@ -14,12 +14,9 @@ import { API } from "../../services/api";
 function* fetchDataSaga(action) {
   try {
     const response = yield call(axiosCall, "POST", API.FETCHDAILYRECDATA,action.payload);
-    console.log(response);
     if (response?.data?.status == 500) {
-      console.log('error');
       yield put(getDailySkuRollupDataError({Data: response?.data}));
     } else {
-      console.log('sucess');
       yield put(getDailySkuRollupDataSuccess({ Data: response?.data }));
     }
   } catch (e) {

@@ -95,6 +95,7 @@ export default function EnhancedTable({
     //console.log(newSelected);
 
     setSelected(newSelected);
+    seteditRows(newSelected);
       //seteditRows(newSelected);     
   
   };

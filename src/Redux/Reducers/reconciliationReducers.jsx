@@ -53,7 +53,7 @@ const ReconciliationReducers = (state = initialState, action) => {
           data: action.payload,
           isError: false,
           messgae: action.payload?.Data?.message,
-          isSuccess: true,
+          isSuccess: false,
         };
       case actions.GET_DEPTRECDATA_ERROR:
         return {
@@ -79,7 +79,7 @@ const ReconciliationReducers = (state = initialState, action) => {
           data: action.payload,
           isError: false,
           messgae: action.payload?.Data?.message,
-          isSuccess: true,
+          isSuccess: false,
         };
       case actions.GET_LOCATIONRECDATA_ERROR:
         return {

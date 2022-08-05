@@ -130,8 +130,11 @@ export default function Index() {
   };
 
   const handleNavigation = (routeName) => {
-    if (routeName === "Upload") {
+    if (routeName === "Upload Inventory") {
       navigate(`/stage-processing`);
+    }
+    if(routeName === "Download"){
+      navigate("/download");
     }
     if (routeName === "Error Processing") {
       navigate("/error-processing");
@@ -140,9 +143,9 @@ export default function Index() {
       navigate("/reconciliation");
     }
     if(routeName === "Inquiry"){
-      navigate("/inquiry");
+      navigate("/Inquiry");
     }
-    if(routeName === "upload"){
+    if(routeName === "Upload Non Inventory"){
       navigate("/noninventory")
     }
   };
@@ -162,6 +165,7 @@ export default function Index() {
     setIsOpen(!isOpen);
   };
   const handleChange = (index) => {
+    console.log("index",index);
     handleClick(index);
     handleDrawerOpen();
   };

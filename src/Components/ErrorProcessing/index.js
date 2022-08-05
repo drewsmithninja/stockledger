@@ -23,6 +23,13 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import SendIcon from '@mui/icons-material/Send';
 import { trnType } from "./transType.js";
 import { errorList } from "./errorType.js"; 
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle'; 
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles'; 
 //import "./index.css";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -121,6 +128,8 @@ const ErrorProcessing = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isSubmit, setSubmit] = useState(false);
   const [open, setOpen] = useState(false);
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [state, setState] = React.useState({
     top: false,
     left: false,
@@ -278,6 +287,11 @@ useEffect(()=> {
     }
   };
 
+const confirmSubmit = () => {
+  setOpen(true);
+}
+
+
   const SubmitList = () => {
     console.log(updateRow);
     if(Object.keys(updateRow).length > 0){
@@ -310,8 +324,7 @@ useEffect(()=> {
     setFilterItem([]);
     setSubmit(true);
     seteditRows([]);
-    }else{
-      setOpen(true)
+    setOpen(false);
     }
     
   };
@@ -329,6 +342,10 @@ const onChange = (e) => {
     };
   });
 }
+
+const handleClose = () => {
+  setOpen(false);
+};
 
 const handleMsgClose = () => {
   setIsError(false)
@@ -560,6 +577,10 @@ const selectError = (event, value) => {
  }
 
  let UniqDept = (itemData.length > 0 )?[...new Map(itemData.map((item) => [item["DEPT"], item])).values()]:[];
+
+ const handleCancel = () => {
+  setOpen(false)
+}
  
 const searchPanel = () => (
   <Box
@@ -843,7 +864,7 @@ const searchPanel = () => (
               alignItems="flex-end" className={ErrorProceesClasses.boxDiv}>
             <div className={ErrorProceesClasses.uploaddiv}>
               {(Object.keys(updateRow).length > 0) && 
-            <Button variant="contained" sx={{marginTop: '15px'}} onClick={SubmitList} startIcon={<SendIcon />}>
+            <Button variant="contained" sx={{marginTop: '15px'}} onClick={confirmSubmit} startIcon={<SendIcon />}>
                   Submit
               </Button> 
                   }
@@ -893,7 +914,7 @@ const searchPanel = () => (
           </Alert>
           </Snackbar>
       </Stack>
-      <Modal
+      {/* <Modal
         open={open}
         onClose={() => {setOpen(false)}}
         aria-labelledby="modal-modal-title"
@@ -907,7 +928,40 @@ const searchPanel = () => (
             Please update record before click submit button.
           </Typography>
         </Box>
-      </Modal>
+      </Modal> */}
+
+      <div>
+    <Dialog
+      fullScreen={fullScreen}
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="responsive-dialog-title"
+      className={ErrorProcessingData.popUp}
+      PaperProps={{
+        style: {
+          backgroundColor: '#D3D3D3',
+          borderRadius: '10px',
+        },
+      }}
+    >
+      <DialogTitle id="responsive-dialog-title">
+        {"Are you want to submit data?"}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Please click to continue for submit data. 
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button autoFocus onClick={handleCancel}>
+          Cancel
+        </Button>
+        <Button onClick={SubmitList} autoFocus>
+          Continue
+        </Button>
+      </DialogActions>
+    </Dialog>
+  </div>
 
     </Box>
   );

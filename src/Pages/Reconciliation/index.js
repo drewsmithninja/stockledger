@@ -13,7 +13,8 @@ import Typography from '@mui/material/Typography';
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import Drawer from "@mui/material/Drawer";
 import { makeStyles } from "@mui/styles";
-import { getDailySkuRollupDataRequest,getDeptRecDataRequest,getLocationRecDataRequest } from "../../Redux/Action/reconciliation";
+import { getDailySkuRollupDataRequest } from "../../Redux/Action/reconciliation";
+import {getClassDataRequest, getLocationDataRequest } from "../../Redux/Action/errorProcessing";
 import CircularProgress from "@mui/material/CircularProgress";
 import { headCells } from "./tableHead";
 import SearchIcon from '@mui/icons-material/Search';
@@ -130,7 +131,11 @@ const Reconciliation = () => {
     (state) => state.ReconciliationReducers
   );
 
-  console.log(DailySkuRollupData);
+  const SearchItemData = useSelector(
+    (state) => state.ErrorProcessingReducers
+  );
+
+  console.log(SearchItemData, DailySkuRollupData);
   const dispatch = useDispatch();
 
   const toggleDrawer = (anchor, open) => (event) => {
@@ -211,16 +216,15 @@ useEffect(() => {
 
 useEffect(()=> {
   setLoading(true);
-  dispatch(getDeptRecDataRequest([{}]));
-  dispatch(getLocationRecDataRequest([{}]));
+  dispatch(getClassDataRequest([{}]));
+  dispatch(getLocationDataRequest([{}]));
 
-  return () =>{
-    setAllData([]);
-    setTabledata([]);
-    setSearchData({});
-    console.log("unmount",allData);
-  }
-
+  // return () =>{
+  //   setAllData([]);
+  //   setTabledata([]);
+  //   setSearchData({});
+  //   console.log("unmount",allData);
+  // }
 },[''])
 
   useEffect(() => {
@@ -229,17 +233,24 @@ useEffect(()=> {
           setAllData(serializedata(DailySkuRollupData?.data?.Data));
           setLoading(false);
           setSearch(false);
-        }else if(DailySkuRollupData?.data?.itemData && Array.isArray(DailySkuRollupData?.data?.itemData)){
-          setItemData(DailySkuRollupData?.data?.itemData);
-          setLoading(false);
-        }else if(DailySkuRollupData?.data?.locationData && Array.isArray(DailySkuRollupData?.data?.locationData)){
-          setLocationData(DailySkuRollupData?.data?.locationData);
-          setLoading(false);
         }else {
           setSearch(false)
         }
         
   },[DailySkuRollupData?.data])
+
+  useEffect(() => {
+    if(SearchItemData?.data?.itemData && Array.isArray(SearchItemData?.data?.itemData)){
+      setItemData(SearchItemData?.data?.itemData);
+          setLoading(false);
+    }else if(SearchItemData?.data?.locationData && Array.isArray(SearchItemData?.data?.locationData)){
+      setLocationData(SearchItemData?.data?.locationData);
+      setLoading(false);
+    }else {
+      setSearch(false)
+    }
+    
+},[SearchItemData?.data])
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -289,6 +300,7 @@ const onReset = (event) => {
       setSearch(false);
       setSort(1);
       setTabledata("");
+      setAllData("");
 
 }
 
@@ -645,32 +657,16 @@ return (
       )}
 
       <Stack spacing={2} sx={{ width: "100%" }}>
-        <Snackbar open={isError || isSuccess} autoHideDuration={3000} onClose={handleMsgClose}>
+        <Snackbar open={isError} autoHideDuration={3000} onClose={handleMsgClose}>
           <Alert
             onClose={handleMsgClose}
-            severity={DailySkuRollupData?.isSuccess ? "success" : "error"}
+            severity={DailySkuRollupData?.isError ? "error" : ""}
             sx={{ width: "100%" }}
           >
-          {DailySkuRollupData?.messgae?DailySkuRollupData?.messgae:'Data Successfully Fetched'}
+          {DailySkuRollupData?.messgae?DailySkuRollupData?.messgae:''}
           </Alert>
           </Snackbar>
       </Stack>
-      <Modal
-        open={open}
-        onClose={() => {setOpen(false)}}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box className={ErrorProceesClasses.popUp}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Note:-
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Please update record before click submit button.
-          </Typography>
-        </Box>
-      </Modal>
-
     </Box>
   );
 };

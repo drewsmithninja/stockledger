@@ -79,7 +79,7 @@ const ErrorProcessingReducers = (state = initialState, action) => {
           data: action.payload,
           isError: false,
           messgae: action.payload?.Data?.message,
-          isSuccess: true,
+          isSuccess: false,
         };
       case actions.GET_CLASSDATA_ERROR:
         return {
@@ -105,7 +105,7 @@ const ErrorProcessingReducers = (state = initialState, action) => {
           data: action.payload,
           isError: false,
           messgae: action.payload?.Data?.message,
-          isSuccess: true,
+          isSuccess: false,
         };
       case actions.GET_LOCATIONDATA_ERROR:
         return {

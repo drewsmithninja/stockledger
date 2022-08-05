@@ -8,6 +8,7 @@ import SystemConfig from "./Pages/systemConfig";
 import Reconciliation from "./Pages/Reconciliation";
 import InquryScreen from "./Pages/inquiry";
 import NonInventory from "./Pages/Noninventory";
+import Download from "./Pages/StageProcessing/download";
 
 function Routing() {
   return (
@@ -16,6 +17,7 @@ function Routing() {
       <Route element={<AdminLayout />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/stage-processing" element={<StageProcessing />} />
+        <Route path="/download" element={<Download />} />
         <Route path="/error-processing" element={<ErrorProcessing />} />
         <Route path="/system-config" element={<SystemConfig />} />
         <Route path="/reconciliation" element={<Reconciliation />} />

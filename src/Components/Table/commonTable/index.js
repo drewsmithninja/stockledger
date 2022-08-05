@@ -136,13 +136,13 @@ const CommonTable = ({
 
   return (
     <>
-      <Paper sx={{ maxWidth: "fit-content", maxHeight: "fit-content", mb: 2 }}>
+      <Paper sx={{ maxWidth: "100%", maxHeight: "fit-content", mb: 2 }}>
       {(pageName != "stage" && pageName != 'reconciliation' && pageName != 'inquiry') &&
         <TableToolbar selected={selected} handledelete={handleDelete} edithandle={handleEdit} seteditRows={seteditRows} setUpdateRow={setUpdateRow} setSelected={setSelected} editRows={editRows} setupdateData={setupdateData} setTabledata={setTabledata} allData={allData}/>
         } 
         <TableContainer sx={{ overflowX: "scroll", overflowY: "scroll",height: "fit-content", maxHeight: "70vh" }}>
           <Table
-            sx={{ minWidth: 750, maxWidth: "fit-content" }}
+            sx={{ maxWidth: "100%" }}
             aria-labelledby="tableTitle"
             size="small"
           >
@@ -269,7 +269,7 @@ const CommonTable = ({
                             } 
                           }
                           return (<TableCell align="left" key={key} className={rowClasses.tabCell} sx={((key == 'SR_NO')?'display:none':'')} 
-                          style={{background:((colorcode)?`${colorcode}`:''),color:((colorcode)?`Red`:``)}}>
+                          style={{color:((colorcode)?`Red`:``)}}>
                               {(value == "NULL")?"":value }
                           </TableCell> )
                       }
@@ -280,7 +280,7 @@ const CommonTable = ({
                   );
                 })}
 
-              {emptyRows > 0 && (
+              {/* {emptyRows > 0 && (
                 <TableRow
                   style={{
                     height: 33 * emptyRows,
@@ -288,12 +288,12 @@ const CommonTable = ({
                 >
                   <TableCell colSpan={6} />
                 </TableRow>
-              )}
+              )} */}
             </TableBody>
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[10, 20, 30]}
+          rowsPerPageOptions={[30, 50, 100]}
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}

@@ -14,10 +14,12 @@ import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import Drawer from "@mui/material/Drawer";
 import { makeStyles } from "@mui/styles";
 import { getInquiryDataRequest } from "../../Redux/Action/inquiry";
+import {getClassDataRequest} from "../../Redux/Action/errorProcessing";
 import CircularProgress from "@mui/material/CircularProgress";
 import { headCells } from "./tableHead";
 import SearchIcon from '@mui/icons-material/Search';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import { trnType } from "../../Components/ErrorProcessing/transType.js";
 
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -82,8 +84,21 @@ const useStyles = makeStyles({
 });
 
 const initialsearch = {
+  DEPT: [],
+  CLASS: [],
+  SUBCLASS: [],
+  ITEM: [],
+  TRN_TYPE: [],
+  AREF: [],
   USER: "",
   DATE: "",
+}
+
+const initialItemData = {
+  DEPT: "",
+  CLASS: "",
+  SUBCLASS: "",
+  ITEM: ""
 }
 
 const InquryScreen = () => {
@@ -92,6 +107,11 @@ const InquryScreen = () => {
   const [allData, setAllData] = useState("");
   const [editRows, seteditRows] = useState([]);
   const [updateRow, setUpdateRow] =  useState([]);
+  const [itemData, setItemData] = useState(initialItemData);
+  const [origItemData, setOrigItemData ] = useState({});
+  const [filterClass, setFilterClass] = useState([]);
+  const [subfilterClass, setsubFilterClass] = useState([]);
+  const [filterItem, setFilterItem] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isSearch, setSearch] = useState(false);
   const [searchData, setSearchData] = useState(initialsearch);
@@ -108,7 +128,12 @@ const InquryScreen = () => {
   const ErrorProcessingData = useSelector(
     (state) => state.InquiryReducers
   );
-  console.log(ErrorProcessingData);
+  //console.log(ErrorProcessingData);
+
+  const InquiryData = useSelector(
+    (state) => state.ErrorProcessingReducers
+  );
+  console.log("Inq",InquiryData);
   const dispatch = useDispatch();
 
   const toggleDrawer = (anchor, open) => (event) => {
@@ -124,12 +149,17 @@ const InquryScreen = () => {
       datatable.map( item => {
           const reorder = {
             'ITEM' : null,
+            'ITEM_DESC': "",
             'ERR_MSG': null,
             'DEPT': null,
+            'DEPT_DESC': "",
             'CLASS': null,
+            'CLASS_DESC': "",
             'SUBCLASS':null,
+            'SUBCLASS_DESC': "",
             'LOCATION_TYPE': null,
             'LOCATION': null,
+            'LOCATION_NAME': "",
             'TRN_TYPE': "",
             'QTY': "",
             'UNIT_COST': "",
@@ -155,7 +185,7 @@ const InquryScreen = () => {
           delete item?.CREATE_ID;
           delete item?.CREATE_DATETIME;
           delete item?.REV_NO;
-          delete item?.rev_trn_no;
+          delete item?.REV_TRN_NO;
           delete item?.AREF;
             let test = Object.assign(reorder,item);
             newTabledata.push(test); 
@@ -195,6 +225,11 @@ useEffect(() => {
   }
 },[isSearch])
 
+useEffect(()=> {
+  setLoading(true);
+  dispatch(getClassDataRequest([{}]));
+},[''])
+
 
   useEffect(() => {
         if(ErrorProcessingData?.data?.Data && Array.isArray(ErrorProcessingData?.data?.Data)){
@@ -207,6 +242,17 @@ useEffect(() => {
         }
         
   },[ErrorProcessingData?.data])
+
+  useEffect(() => {
+    if(InquiryData?.data?.itemData && Array.isArray(InquiryData?.data?.itemData)){
+      setItemData(InquiryData?.data?.itemData);
+      setOrigItemData(InquiryData?.data?.itemData);
+          setLoading(false);
+    }else {
+      setSearch(false)
+    }
+    
+},[InquiryData?.data])
 
 
 
@@ -249,14 +295,165 @@ const handleMsgClose = () => {
 const onReset = (event) => {
     initialsearch.USER= "";
     initialsearch.DATE= "";
-    console.log('datainitial',initialsearch);
-      setSearchData(initialsearch)      
-      console.log('data',searchData);
+
+      setSearchData(initialsearch)    
       setSearch(false);
       setTabledata("");
+      setAllData("");
 
 }
 
+const selectDept = (event, value) => {
+  let selectedDept = [];
+  if(value.length > 0){
+    console.log(itemData);
+  const filterClass = itemData.filter((item) => { return value.some((val) => { return item.DEPT === val.DEPT})});
+    console.log(filterClass);
+    let UniqClass = (filterClass.length > 0 )?[...new Map(filterClass.map((item) => [item["CLASS"], item])).values()]:[];
+    //const classFilter = (filterClass.length > 0 )?[...new Set(filterClass.map(item => item.CLASS))]:[];
+    setFilterClass(UniqClass);
+
+    value.map(
+      (item) => {
+        selectedDept.push(item.DEPT);
+      }
+    )
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        DEPT : selectedDept
+      };
+    });
+
+  }else{
+   setFilterClass([])
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        DEPT : []
+      };
+    });
+  }
+}
+console.log(JSON.stringify(tabledata));
+
+const selectClass = (event,value) => {
+  console.log(value);
+ let selectedClass = [];
+  if(value.length > 0){
+    //const subclassFilter = (filterSubClass.length > 0 )?[...new Set(filterSubClass.map(item => item.SUBCLASS))]:[];
+    const filterSubClass = itemData.filter((item) => { return value.some((val) => { return item.CLASS === val.CLASS})});  
+    let UniqSubClass = (filterSubClass.length > 0 )?[...new Map(filterSubClass.map((item) => [item["SUBCLASS"], item])).values()]:[];
+    
+    console.log(UniqSubClass);
+   setsubFilterClass(UniqSubClass)
+   value.map(
+    (item) => {
+      selectedClass.push(item.CLASS);
+    }
+  )
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        CLASS : selectedClass
+      };
+    });
+
+  }else{
+    setsubFilterClass([])
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        CLASS : []
+      };
+    });
+  }
+}
+const selectSubClass = (event,value) => {
+  let selectedSubclass = [];
+  if(value.length > 0){
+    //const itemFilter = (filterItem.length > 0 )?[...new Set(filterItem.map(item => item.ITEM))]:[];
+   // console.log(itemFilter);
+   const filterItem = itemData.filter((item) => { return value.some((val) => { return item.SUBCLASS === val.SUBCLASS})});  
+    setFilterItem(filterItem)
+    value.map(
+      (item) => {
+        selectedSubclass.push(item.SUBCLASS);
+      }
+    )
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        SUBCLASS : selectedSubclass
+      };
+    });
+
+  }else{
+    setFilterItem([])
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        SUBCLASS : []
+      };
+    });
+  }
+}
+
+const selectItem = (event, value) => {
+  let selectedItem = [];
+  if(value.length > 0){
+    value.map(
+      (item) => {
+          selectedItem.push(item.ITEM);
+      }
+    )
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        ITEM : selectedItem
+      };
+    });
+  }else{
+    setSearchData((prev) => {
+      return {
+        ...prev,
+        ITEM : selectedItem
+      };
+    });
+  }
+}
+
+const selectTrantype = (event, value) => {
+  console.log(value);
+ let selectedTrantype = [];
+ let selectedAref = [];
+ if(value.length > 0){
+   value.map(
+     (item) => {
+       selectedTrantype.push(item.TRN_TYPE);
+       selectedAref.push(item.AREF)
+     }
+   )
+   setSearchData((prev) => {
+     return {
+       ...prev,
+       TRN_TYPE : selectedTrantype,
+       AREF: selectedAref
+     };
+   });
+ }else{
+   setSearchData((prev) => {
+     return {
+       ...prev,
+       TRN_TYPE : [],
+       AREF: []
+     };
+   });
+ }
+
+}
+
+let UniqDept = (itemData.length > 0 )?[...new Map(itemData.map((item) => [item["DEPT"], item])).values()]:[];
 console.log(searchData);
 const searchPanel = () => (
   <Box
@@ -266,18 +463,149 @@ const searchPanel = () => (
     onSubmit={handleSubmit}
   > <Grid item xs={12} sx={{display:'flex', justifyContent:'center', marginTop: '15px'}}>
          <Stack spacing={2} sx={{ width: 250 }}>
-         
+         <Autocomplete
+              multiple
+              size="small"
+              id="combo-box-item"
+              sx={{ width: 250 }}
+              options={(UniqDept.length > 0)?UniqDept:[]}
+              //value={searchData?.DEPT}
+              isOptionEqualToValue={(option, value) => option.DEPT === value.DEPT}
+              autoHighlight
+              onChange={selectDept}
+              getOptionLabel={(option) => `${option.DEPT.toString()}-${option.DEPT_DESC.toString()}`}
+              renderOption={(props, option) => (
+                <Box component="li" {...props}>
+                  {option.DEPT}-{option.DEPT_DESC}
+                </Box>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="standard" 
+                  label="Choose a DEPT"
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: 'new-password', // disable autocomplete and autofill
+                  }}
+                />
+              )}
+            />
+
+            <Autocomplete
+              multiple
+              size="small"
+              id="combo-box-class"
+              sx={{ width: 250 }}
+              options={(filterClass.length > 0)?filterClass:[]}
+              //value={(searchData?.ITEM.length > 0)?searchData?.ITEM:[]}
+              isOptionEqualToValue={(option, value) => option.CLASS === value.CLASS}
+              autoHighlight
+              onChange={selectClass}
+              getOptionLabel={(option) => `${option.CLASS.toString()}-${option.CLASS_DESC.toString()}`}
+              renderOption={(props, option) => (
+                <Box component="li" {...props}>
+                  {option.CLASS} {option.CLASS_DESC}
+                </Box>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="standard" 
+                  label="Choose a CLASS"
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: 'new-password', // disable autocomplete and autofill
+                  }}
+                />
+              )}
+            />
+            
+
+<Autocomplete
+              multiple
+              size="small"
+              id="combo-box-subclass"
+              sx={{ width: 250 }}
+              options={(subfilterClass.length > 0)?subfilterClass:[]}
+              //value={(searchData?.ITEM.length > 0)?searchData?.ITEM:[]}
+              isOptionEqualToValue={(option, value) => option.SUBCLASS === value.SUBCLASS}
+              autoHighlight
+              onChange={selectSubClass}
+              getOptionLabel={(option) => `${option.SUBCLASS.toString()}-${option.SUBCLASS_DESC.toString()}`}
+              renderOption={(props, option) => (
+                <Box component="li" {...props}>
+                  {option.SUBCLASS} {option.SUBCLASS_DESC}
+                </Box>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="standard" 
+                  label="Choose a SUBCLASS"
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: 'new-password', // disable autocomplete and autofill
+                  }}
+                />
+              )}
+            />
+   
+  
+            <Autocomplete
+              multiple
+              size="small"
+              id="combo-box-item"
+              sx={{ width: 250 }}
+              options={(filterItem.length > 0)?filterItem:[]}
+              //value={(searchData?.ITEM.length > 0)?searchData?.ITEM:[]}
+              isOptionEqualToValue={(option, value) => option.ITEM === value.ITEM}
+              autoHighlight
+              onChange={selectItem}
+              getOptionLabel={(option) => `${option.ITEM.toString()}-${option.ITEM_DESC.toString()}`}
+              renderOption={(props, option) => (
+                <Box component="li" {...props}>
+                  {option.ITEM} {option.ITEM_DESC}
+                </Box>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="standard" 
+                  label="Choose a ITEM"
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: 'new-password', // disable autocomplete and autofill
+                  }}
+                />
+              )}
+            />
+             
+             <Autocomplete
+              multiple
+              disablePortal
+              size="small"
+              id="combo-box-trn-type"
+             // value={(searchData?.TRN_TYPE.length > 0)?searchData?.TRN_TYPE:[]}
+              onChange={selectTrantype}
+              options={trnType}
+              getOptionLabel={(option) => option.TRN_NAME}
+              sx={{ width: 250 }}
+              renderInput={(params) => <TextField {...params} label="TRN TYPE" variant="standard" />}
+            />
+
             <TextField
               className={ErrorProceesClasses.textField}
-              disabled
               margin="normal"
               size="small"
               variant="standard" 
               name="USER"
               label="User"
               type="text"
+              onChange={onChange}
+              value={searchData.USER}
               sx={{ width: 250 }}
-              value={JSON.parse(localStorage.getItem("userData"))?.username}
+
             />
              <TextField
               className={ErrorProceesClasses.dateField}
@@ -328,7 +656,7 @@ const searchPanel = () => (
         <Grid item xs={6}>
           <Box className={ErrorProceesClasses.boxDiv}>
             <div className={ErrorProceesClasses.uploaddiv}>
-              <h4>Inquiries</h4>
+              <h4>Inquiry</h4>
             </div>
           </Box>
         </Grid>
@@ -383,22 +711,6 @@ const searchPanel = () => (
           </Alert>
           </Snackbar>
       </Stack>
-      <Modal
-        open={open}
-        onClose={() => {setOpen(false)}}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box className={ErrorProceesClasses.popUp}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Note:-
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Please update record before click submit button.
-          </Typography>
-        </Box>
-      </Modal>
-
     </Box>
   );
 };

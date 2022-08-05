@@ -32,7 +32,12 @@ export const GetItems = () => {
           },
           {
             id: 2,
-            name: "Upload",
+            name: "Upload Inventory",
+            icon: <UploadIcon sx={{color: "#66cdaa"}}/>,
+          },
+          {
+            id: 2,
+            name: "Upload Non Inventory",
             icon: <UploadIcon sx={{color: "#66cdaa"}}/>,
           },
         ],
@@ -67,18 +72,6 @@ export const GetItems = () => {
           {
             id: 1,
             name: "Inquiry",
-          },
-        ],
-      },
-      {
-        id: 6,
-        name: "Noninventory",
-        icon: <InventoryIcon sx={{color: "#66cdaa"}}/>,
-        subitems: [
-          {
-            id: 1,
-            name: "upload",
-            icon: <UploadIcon sx={{color: "#66cdaa"}}/>,
           },
         ],
       },
