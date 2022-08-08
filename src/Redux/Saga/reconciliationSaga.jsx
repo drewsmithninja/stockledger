@@ -5,7 +5,7 @@ import {
   getDeptRecDataSuccess,
   getDeptRecDataError,
   getLocationRecDataSuccess,
-  getLocationRecDataError
+  getLocationRecDataError,
 } from "../Action/reconciliation";
 import * as actions from "../constant";
 import axiosCall from "../../services/index";
@@ -13,9 +13,14 @@ import { API } from "../../services/api";
 
 function* fetchDataSaga(action) {
   try {
-    const response = yield call(axiosCall, "POST", API.FETCHDAILYRECDATA,action.payload);
+    const response = yield call(
+      axiosCall,
+      "POST",
+      API.FETCHDAILYRECDATA,
+      action.payload
+    );
     if (response?.data?.status == 500) {
-      yield put(getDailySkuRollupDataError({Data: response?.data}));
+      yield put(getDailySkuRollupDataError({ Data: response?.data }));
     } else {
       yield put(getDailySkuRollupDataSuccess({ Data: response?.data }));
     }
@@ -30,7 +35,12 @@ export function* DailySkuRollupData() {
 
 function* getDeptDataSaga(action) {
   try {
-    const response = yield call(axiosCall, "POST", API.GETCLASSDATA,action.payload);
+    const response = yield call(
+      axiosCall,
+      "POST",
+      API.GETHIER2DATA,
+      action.payload
+    );
     //console.log(response);
     if (response?.status == 200) {
       yield put(getDeptRecDataSuccess({ itemData: response?.data }));
@@ -43,12 +53,17 @@ function* getDeptDataSaga(action) {
 }
 
 export function* getDeptRecData() {
-  yield takeLatest(actions.GET_DEPTRECDATA_REQUEST, getDeptDataSaga);
+  yield takeLatest(actions.GET_HIER1RECDATA_REQUEST, getDeptDataSaga);
 }
 
 function* getLocationRecDataSaga(action) {
   try {
-    const response = yield call(axiosCall, "POST", API.GETLOCATIONDATA,action.payload);
+    const response = yield call(
+      axiosCall,
+      "POST",
+      API.GETLOCATIONDATA,
+      action.payload
+    );
     //console.log(response);
     if (response?.status == 200) {
       yield put(getLocationRecDataSuccess({ locationData: response?.data }));

@@ -1,9 +1,9 @@
 export const headCells = [
   {
-    id: "DEPT",
+    id: "HIER1",
     numeric: true,
     disablePadding: false,
-    label: "DEPT",
+    label: "HIER1",
     width: "100%",
   },
   {
