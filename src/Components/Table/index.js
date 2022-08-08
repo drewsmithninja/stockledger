@@ -75,6 +75,21 @@ export default function EnhancedTable({
     setSelected([]);
   };
 
+
+  // const handleSelectAllClick = (event) => {
+  //   if (event.target.checked) {
+  //     const newSelecteds = stableSort(tableData, getComparator(order, orderBy))
+  //       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+  //       .map((value) => {  return value['SR_NO']?value['SR_NO']:value['TRAN_SEQ_NO'];});
+
+  //     setSelected(newSelecteds);
+  //     return;
+  //   }else{
+  //     console.log(selected);
+  //   setSelected([]);
+  //   }
+  // };
+
   const handleClick = (event, name) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected = [];

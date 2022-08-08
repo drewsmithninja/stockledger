@@ -48,8 +48,8 @@ const Download = () => {
 
   const[template, setTemplate] = useState("");
   const [selectedFile, setSelectedFile] = useState(0);
-  const Inventoryfile = require("./inventory_template.xlsx");
-  const Non_Inventoryfile = require("./non_inventory_template.xlsx");
+  const Inventoryfile = require("../../Assets/templates/STAGE_PROCESSING_INV_TRAN_TEMPLATE.xlsx");
+  const Non_Inventoryfile = require("../../Assets/templates/STAGE_PROCESSING_NON_INV_TRAN_TEMPLATE.xlsx");
   const StageProceesClasses = useStyles();
 
 
@@ -71,7 +71,7 @@ const Download = () => {
   const DownloadFiles = () => {
         console.log("Download Files");
         const link = document.createElement("a");
-        link.download = (selectedFile == 1)?"inventory_template.xlsx":"non_inventory_template.xlsx";;
+        link.download = (selectedFile == 1)?"STAGE_PROCESSING_INV_TRAN_TEMPLATE.xlsx":"STAGE_PROCESSING_NON_INV_TRAN_TEMPLATE.xlsx";
         link.href = template;
         link.click();
         console.log("link",link);

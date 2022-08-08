@@ -164,10 +164,15 @@ export default function Index() {
   const handleSubMenuNavigation = () => {
     setIsOpen(!isOpen);
   };
-  const handleChange = (index) => {
+  const handleChange = (index, itemData) => {
     console.log("index",index);
     handleClick(index);
-    handleDrawerOpen();
+    console.log("open",open);
+    if(itemData?.id !== 0 && itemData?.id !== 1){
+      handleDrawerOpen()
+    }else{
+    setOpen(!open);
+    }
   };
   const handleErrorProcessing = () => {
     navigate("/error-processing");
@@ -237,7 +242,7 @@ export default function Index() {
                 <>
                   <ListItemButton
                     onClick={() => {
-                      handleChange(index);
+                      handleChange(index, itemsData);
                     }}
                   >
                     <ListItemIcon>{itemsData.icon}</ListItemIcon>

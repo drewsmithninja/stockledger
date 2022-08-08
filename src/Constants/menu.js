@@ -36,7 +36,7 @@ export const GetItems = () => {
             icon: <UploadIcon sx={{color: "#66cdaa"}}/>,
           },
           {
-            id: 2,
+            id: 3,
             name: "Upload Non Inventory",
             icon: <UploadIcon sx={{color: "#66cdaa"}}/>,
           },

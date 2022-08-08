@@ -233,7 +233,7 @@ const ErrorProcessing = () => {
     if(isSubmit){
       setTimeout(() => {
         dispatch(getErrorProcessingRequest([searchData])) 
-      },3000)
+      },500)
     }
 },[isSubmit]);
 

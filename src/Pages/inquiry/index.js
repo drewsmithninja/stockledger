@@ -160,7 +160,7 @@ const InquryScreen = () => {
             'LOCATION_TYPE': null,
             'LOCATION': null,
             'LOCATION_NAME': "",
-            'TRN_TYPE': "",
+            'TRN_NAME': "",
             'QTY': "",
             'UNIT_COST': "",
             'UNIT_RETAIL': "",
@@ -187,6 +187,7 @@ const InquryScreen = () => {
           delete item?.REV_NO;
           delete item?.REV_TRN_NO;
           delete item?.AREF;
+          delete item?.TRN_TYPE;
             let test = Object.assign(reorder,item);
             newTabledata.push(test); 
     })

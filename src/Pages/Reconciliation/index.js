@@ -52,7 +52,7 @@ const useStyles = makeStyles({
 },  boxDiv: {
     textAlign: "initial",
     position: "relative",
-    maxWidth: "1400px",
+    maxWidth: "100%",
   },
   uploaddiv: {
     display: "flex",
