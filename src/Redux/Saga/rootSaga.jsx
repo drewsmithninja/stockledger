@@ -5,6 +5,10 @@ import {updateSystemConfig, SystemConfig} from "./systemConfigSaga";
 import { DailyCountData,StageCountData,ErrorCountData } from "./dashBoardSaga";
 import { DailySkuRollupData,getLocationRecData,getDeptRecData  } from "./reconciliationSaga"; 
 import { InquiryData } from "./inquirySaga";
+import {TransactionReversal,updateTransactionReversal,cancelTransactionReversal,getClassDataTrans, getLocationDataTrans} from "./transactionReversalSaga";
+import { CostChange, updateCostChange } from "./CostChangeSaga"; 
+import {GlAccount,updateGlAccount,GLcurrency} from "./glaccountSaga";
+import {GlAccountcreation} from "./glaccountSagacreation";
 
 export function* rootSaga() {
   yield all([
@@ -21,6 +25,17 @@ export function* rootSaga() {
     fork(DailySkuRollupData),
     fork(getDeptRecData),
     fork(getLocationRecData),
-    fork(InquiryData)
+    fork(InquiryData),
+    fork(TransactionReversal),
+    fork(updateTransactionReversal),
+    fork(getClassDataTrans),
+    fork(getLocationDataTrans),
+    fork(cancelTransactionReversal),
+    fork(CostChange),
+    fork(updateCostChange),
+    fork(updateGlAccount),
+    fork(GlAccount),
+    fork(GLcurrency),
+    fork(GlAccountcreation),
   ]);
 }

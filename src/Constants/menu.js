@@ -7,6 +7,9 @@ import RepeatIcon from '@mui/icons-material/Repeat';
 import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import HelpIcon from '@mui/icons-material/Help';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import BookIcon from '@mui/icons-material/Book';
+
 export const GetItems = () => {
   let json = {
     list: [
@@ -72,6 +75,49 @@ export const GetItems = () => {
           {
             id: 1,
             name: "Inquiry",
+          },
+        ],
+      },
+      {
+        id: 6,
+        name: "Transaction Maintenance",
+        icon: <ReceiptLongIcon sx={{color: "#66cdaa"}}/>,
+        subitems: [
+          {
+            id: 1,
+            name: "Edit Transaction",
+          },
+          {
+            id: 2,
+            name: "Transaction Reversal",
+          },
+        ],
+      },
+      {
+        id: 7,
+        name: "Cost Maintenance",
+        icon: <ReceiptIcon sx={{color: "#66cdaa"}}/>,
+        subitems: [
+          {
+            id: 1,
+            name: "Unit Cost Maintenance",
+            },
+
+            
+        ],
+      },
+      {
+        id: 8,
+        name: "Account maintenance",
+        icon: <BookIcon sx={{color: "#66cdaa"}}/>,
+        subitems: [
+          {
+            id: 1,
+            name: "Account maintenance",
+          },
+          {
+            id:2,
+            name: "Account creation",
           },
         ],
       },

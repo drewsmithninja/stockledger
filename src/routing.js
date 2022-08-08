@@ -9,6 +9,11 @@ import Reconciliation from "./Pages/Reconciliation";
 import InquryScreen from "./Pages/inquiry";
 import NonInventory from "./Pages/Noninventory";
 import Download from "./Pages/StageProcessing/download";
+import EditTransaction from "./Pages/editTransaction";
+import TransactionReversal from "./Pages/TransactionReversal";
+import CostChange from "./Components/CostChange";
+import GlAccount from "./Components/GLAccount";
+import GLCreation from "./Components/GLCreation";
 
 function Routing() {
   return (
@@ -23,6 +28,11 @@ function Routing() {
         <Route path="/reconciliation" element={<Reconciliation />} />
         <Route path="/inquiry" element={<InquryScreen />} />
         <Route path="/noninventory/" element={<NonInventory />} />
+        <Route path="/edit-transaction" element={<EditTransaction/>} />
+        <Route path="/transaction-reversal" element={<TransactionReversal/>} />
+        <Route path="/Cost-Maintenance" element={<CostChange />} />
+        <Route path="/Account-maintenance" element={<GlAccount />} />  
+        <Route path="/ACCOUNT-CREATION" element={<GLCreation />} /> 
       </Route>
     </Routes>
   );

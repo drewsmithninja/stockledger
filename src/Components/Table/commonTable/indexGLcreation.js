@@ -3,10 +3,8 @@ import Header from "../Header";
 import Autocomplete from '@mui/material/Autocomplete';
 import {Table, TableBody, TableCell, TableContainer, TablePagination, TableRow,Paper, Checkbox, TextField } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import TableToolbar from "../Toolbar/index";
-import { trnType } from "../../ErrorProcessing/transType";
+import TableToolbar from "../Toolbar/indexGLaccountcreation";
 import "../index.css";
-import { bgcolor } from "@mui/system";
 
 const useStyles = makeStyles({
   tabCell: {
@@ -73,7 +71,7 @@ const CommonTable = ({
   //     finalData.push(row);
   //   }
   //   else {
-  //     var t = finalData.findIndex(x => x.TRAN_SEQ_NO === row['TRAN_SEQ_NO']);
+  //     var t = finalData.findIndex(x => x.PRIMARY_ACCOUNT === row['PRIMARY_ACCOUNT']);
   //     if(t === -1) {
   //       finalData.push(row);
   //     }
@@ -89,12 +87,12 @@ const CommonTable = ({
   //   // let temp = JSON.stringify(updateData);
   //   // temp = JSON.parse(temp);
   //   // console.log(temp);
-  //   //   //let oldrow = rows.filter((item) => item?.TRAN_SEQ_NO.includes(editRows) );
-  //   // if(temp.findIndex(x => x.TRAN_SEQ_NO === row['TRAN_SEQ_NO']) == -1 ){
-  //   // temp[row?.TRAN_SEQ_NO] = row;
-  //   // temp[row?.TRAN_SEQ_NO][event.target.name] = event.target.value; 
+  //   //   //let oldrow = rows.filter((item) => item?.PRIMARY_ACCOUNT.includes(editRows) );
+  //   // if(temp.findIndex(x => x.PRIMARY_ACCOUNT === row['PRIMARY_ACCOUNT']) == -1 ){
+  //   // temp[row?.PRIMARY_ACCOUNT] = row;
+  //   // temp[row?.PRIMARY_ACCOUNT][event.target.name] = event.target.value; 
   //   // if(event.target.name == 'QTY'){
-  //   //   temp[row?.TRAN_SEQ_NO]['TOTAL_COST'] = event.target.value * row['UNIT_COST']; 
+  //   //   temp[row?.PRIMARY_ACCOUNT]['TOTAL_COST'] = event.target.value * row['UNIT_COST']; 
   //   // }
   //   // //let updaterow = Object.values(temp);
     
@@ -115,16 +113,16 @@ const CommonTable = ({
 
   const onBlur = (event, value , row) => {
     let temp = {...updateData};
-    console.log(temp);
-    temp[(row?.TRAN_SEQ_NO)?row?.TRAN_SEQ_NO:row?.SR_NO] = row;
-    temp[(row?.TRAN_SEQ_NO)?row?.TRAN_SEQ_NO:row?.SR_NO][event.target.name] = event.target.value; 
+    console.log("test: ",temp);
+    temp[row?.PEIMARY_ACCOUNT] = row;
+    temp[row?.PRIMARY_ACCOUNT][event.target.name] = event.target.value; 
     if(event.target.name == 'QTY') {
-           temp[row?.TRAN_SEQ_NO]['TOTAL_COST'] = parseInt(event.target.value) * parseInt(row['UNIT_COST']); 
+           temp[row?.PRIMARY_ACCOUNT]['TOTAL_COST'] = parseInt(event.target.value) * parseInt(row['UNIT_COST']); 
          }
       if(value){
-        temp[(row?.TRAN_SEQ_NO)?row?.TRAN_SEQ_NO:row?.SR_NO]['TRN_TYPE'] = value['TRN_TYPE'];
-        temp[(row?.TRAN_SEQ_NO)?row?.TRAN_SEQ_NO:row?.SR_NO]['AREF'] = value['AREF']; 
+        temp[row?.PRIMARY_ACCOUNT]['TRN_TYPE'] = value['TRN_TYPE']; 
       }   
+      console.log(temp);
     setupdateData(temp)
   }
 
@@ -136,13 +134,13 @@ const CommonTable = ({
 
   return (
     <>
-      <Paper sx={{ maxWidth: "100%", maxHeight: "fit-content", mb: 2 }}>
-      {(pageName != "stage" && pageName != 'reconciliation' && pageName != 'inquiry') &&
+      <Paper sx={{ maxWidth: "fit-content", maxHeight: "fit-content", mb: 2 }}>
+      {(pageName != "stage") &&
         <TableToolbar selected={selected} handledelete={handleDelete} edithandle={handleEdit} seteditRows={seteditRows} setUpdateRow={setUpdateRow} setSelected={setSelected} editRows={editRows} setupdateData={setupdateData} setTabledata={setTabledata} allData={allData}/>
         } 
         <TableContainer sx={{ overflowX: "scroll", overflowY: "scroll",height: "fit-content", maxHeight: "70vh" }}>
           <Table
-            sx={{ maxWidth: "100%" }}
+            sx={{ minWidth: 750, maxWidth: "fit-content" }}
             aria-labelledby="tableTitle"
             size="small"
           >
@@ -163,7 +161,7 @@ const CommonTable = ({
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row?.SR_NO?row?.SR_NO:row?.TRAN_SEQ_NO);
+                  const isItemSelected = isSelected(row?.SR_NO?row?.SR_NO:row?.PRIMARY_ACCOUNT);
                   const labelId = `enhanced-table-checkbox-${index}`;
                   return (
                     <TableRow
@@ -171,13 +169,13 @@ const CommonTable = ({
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row?.SR_NO?row?.SR_NO:row?.TRAN_SEQ_NO}
+                      key={row?.SR_NO?row?.SR_NO:row?.PRIMARY_ACCOUNT}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox
                           color="primary"
-                          onClick={(event) => handleClick(event, row?.SR_NO?row?.SR_NO:row?.TRAN_SEQ_NO)}
+                          onClick={(event) => handleClick(event, row?.SR_NO?row?.SR_NO:row?.PRIMARY_ACCOUNT)}
                           checked={isItemSelected}
                           inputProps={{
                             "aria-labelledby": labelId,
@@ -188,11 +186,10 @@ const CommonTable = ({
                          // disabled={editRows && editRows.length > 0}
                         />
                       </TableCell>
-                      { editRows?.includes((row?.TRAN_SEQ_NO)?row?.TRAN_SEQ_NO:row?.SR_NO) ? <>
+                      { editRows?.includes(row?.PRIMARY_ACCOUNT) ? <>
                         {Object.entries(row).map(([key, value]) => {
-                            let editable;
-                          if(pageName == "error"){
-                              editable = false;
+                          
+                            let editable = false;
                             if(key == "ITEM"){
                                 editable = row["ERR_MSG"] === "ITEM IS NULL" || row["ERR_MSG"] == "INVALID ITEM";
                             }if(key == "LOCATION"){
@@ -203,57 +200,21 @@ const CommonTable = ({
                               editable = row["ERR_MSG"] === "QTY is null";
                             }if(key == "CURRENCY"){
                               editable = row["ERR_MSG"] === "invalid currency" || row['ERR_MSG'] === "invalid location currency combination";
-                            }if(key == 'TRN_DATE'){
+                            }if(key == 'TRAN_DATE'){
                               editable = row['ERR_MSG'] === "trn_date cannot be in future";
-                              console.log("date",editable);
                             }
-                          }
-                          if(pageName == "config"){
-                              editable = true;
-                            if(key == 'TRN_NAME'){
-                              editable = false;
-                              console.log(editable);
-                              }
-                          }
-                          if(pageName == "edit_Transaction"){
-                            editable = false;
-                          if(key == 'QTY'){
-                            editable = true;
-                            console.log("log:",editable);
-                            }
-                          if(key == 'UNIT_COST'){
-                            editable = true;
-                          }
-                          if(key == 'UNIT_RETAIL'){
-                            editable = true;
-                          }}
-                        //   if(pageName == "cost_maintenance"){
-                        //   if(key == "UNIT_COST"){
-                        //     editable = true
-                        // }}
+
+
+
                             return <TableCell padding="none" align="left" key={key} className={rowClasses.tabCell}>
-                              {(key == 'TRN_NAME' && pageName == 'error') ? (
-                                    <Autocomplete
-                                    disabled={!editable}
-                                    disablePortal
-                                    size="small"
-                                    id="combo-box-trn-type"
-                                    // value={(row?.TRN_TYPE == option?.TRN_TYPE)?row?.TRN_TYPE: }
-                                    onChange={ (event, value) => onBlur(event, value, row)}
-                                    options={trnType}
-                                    getOptionLabel={(option) => option.TRN_NAME}
-                                    sx={{ width: 200 }}
-                                    renderInput={(params) => <TextField {...params} variant="standard" />}
-                                  />
-                              ) : (
+                              {
                                 <TextField 
                             disabled={!editable}
                             size="small"
-                            type={(key == 'TRN_DATE')?'date':'text'}
                             variant="standard"
                             className={rowClasses.input}
                             defaultValue={value} name={key} onChange={ (event, value) => onBlur(event,value,row)} />
-                              )
+                             
                               
                               }
                             
@@ -262,33 +223,10 @@ const CommonTable = ({
                       )}
                       </> :           
                       <>
-                      {Object.entries(row).map(([key, value])=> {
-                          let colorcode = "";
-                          if(pageName == "reconciliation"){
-                            if(key == "QTY"){
-                                colorcode = (row['QTY_MATCHED'] == 'N')?"lightyellow":"";
-                            } 
-                            if(key == "ROLLED_QTY"){
-                              colorcode = (row['QTY_MATCHED'] == 'N')?"lightyellow":"";
-                            }
-                            if(key == "COST"){
-                              colorcode = (row['COST_MATCHED'] == 'N')?"lightyellow":"";
-                             } 
-                           if(key == "ROLLED_COST"){
-                            colorcode = (row['COST_MATCHED'] == 'N')?"lightyellow":"";
-                            }
-                            if(key == "RETAIL"){
-                            colorcode = (row['RETAIL_MATCHED'] == 'N')?"lightyellow":"";
-                            } 
-                            if(key == "ROLLED_RETAIL"){
-                            colorcode = (row['RETAIL_MATCHED'] == 'N')?"lightyellow":"";
-                            } 
-                          }
-                          return (<TableCell align="left" key={key} className={rowClasses.tabCell} sx={((key == 'SR_NO')?'display:none':'')} 
-                          style={{color:((colorcode)?`Red`:``)}}>
-                              {(value == "NULL")?"":value }
-                          </TableCell> )
-                      }
+                      {Object.entries(row).map(([key, value])=> 
+                          <TableCell align="left" key={key} className={rowClasses.tabCell} sx={((key == 'SR_NO')?'display:none':'')}>
+                              {value || "" }
+                          </TableCell>
                       )}
                       </> }
                       
@@ -296,7 +234,7 @@ const CommonTable = ({
                   );
                 })}
 
-              {/* {emptyRows > 0 && (
+              {emptyRows > 0 && (
                 <TableRow
                   style={{
                     height: 33 * emptyRows,
@@ -304,12 +242,12 @@ const CommonTable = ({
                 >
                   <TableCell colSpan={6} />
                 </TableRow>
-              )} */}
+              )}
             </TableBody>
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[30, 50, 100]}
+          rowsPerPageOptions={[10, 20, 30]}
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}

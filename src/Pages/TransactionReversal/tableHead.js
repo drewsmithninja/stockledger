@@ -7,13 +7,6 @@ export const headCells = [
     width: "100%",
   },
   {
-    id: "ERR_MSG",
-    numeric: false,
-    disablePadding: false,
-    label: "ERR MSG",
-    width: "120px",
-  },
-  {
     id: "ITEM_DESC",
     numeric: true,
     disablePadding: false,
@@ -22,7 +15,7 @@ export const headCells = [
   },
   {
     id: "HIER1",
-    numeric: true,
+    numeric: false,
     disablePadding: true,
     label: "HIER1",
     width: "100%",
@@ -56,7 +49,7 @@ export const headCells = [
     width: "100%",
   },
   {
-    id: "HIER3_DESC",
+    id: "HIER3 DESC",
     numeric: false,
     disablePadding: true,
     label: "HIER3 DESC",
@@ -94,8 +87,15 @@ export const headCells = [
     id: "TRN_TYPE",
     numeric: true,
     disablePadding: false,
-    label: "TRN TYPE",
+    label: "TRN NAME",
     width: "100px",
+  },
+  {
+    id: "TRN_NAME",
+    numeric: true,
+    disablePadding: false,
+    label: "TRN TYPE",
+    width: "120px",
   },
   {
     id: "QTY",
@@ -168,17 +168,17 @@ export const headCells = [
     width: "90px",
   },
   {
-    id: "ERR_SEQ_NO",
-    numeric: false,
-    disablePadding: false,
-    label: "ERR SEQ NO",
-    width: "120px",
-  },
-  {
     id: "TRAN_SEQ_NO",
     numeric: false,
     disablePadding: true,
     label: "TRAN SEQ NO",
     width: "120px",
+  },
+  {
+    id: "AREF",
+    numeric: false,
+    disablePadding: true,
+    label: "AREF",
+    width: "60px",
   },
 ];

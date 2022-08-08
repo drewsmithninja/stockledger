@@ -148,6 +148,21 @@ export default function Index() {
     if(routeName === "Upload Non Inventory"){
       navigate("/noninventory")
     }
+    if (routeName === "Edit Transaction") {
+      navigate("/edit-transaction");
+    }
+    if (routeName === "Transaction Reversal") {
+      navigate("/transaction-reversal");
+    }
+    if (routeName === "Unit Cost Maintenance") {
+      navigate("/Cost-Maintenance");
+    }
+    if (routeName === "Account maintenance") {
+      navigate("/Account-maintenance");
+    }
+    if (routeName === "Account creation") {
+      navigate("/ACCOUNT-CREATION");
+    }
   };
   const handleHomePage = (routedata) => {
     if (routedata == "Home") {

@@ -145,7 +145,7 @@ const ErrorProcessing = () => {
   const ErrorProcessingData = useSelector(
     (state) => state.ErrorProcessingReducers
   );
-  console.log(ErrorProcessingData);
+  //console.log(ErrorProcessingData?.data?.Data);
   const dispatch = useDispatch();
 
   const toggleDrawer = (anchor, open) => (event) => {
@@ -261,10 +261,7 @@ const ErrorProcessing = () => {
   }, [""]);
 
   useEffect(() => {
-    if (
-      ErrorProcessingData?.data?.Data &&
-      Array.isArray(ErrorProcessingData?.data?.Data)
-    ) {
+    if (ErrorProcessingData?.data?.Data && Array.isArray(ErrorProcessingData?.data?.Data)) {
       setTabledata(serializedata(ErrorProcessingData?.data?.Data));
       setAllData(serializedata(ErrorProcessingData?.data?.Data));
       setLoading(false);
@@ -303,7 +300,7 @@ const ErrorProcessing = () => {
       }));
     }
   };
-
+console.log("test",tabledata)
   const confirmSubmit = () => {
     setOpen(true);
   };
