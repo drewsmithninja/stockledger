@@ -20,4 +20,5 @@ export const API = {
   UPDATEGLACCOUNT:"/GL_ACCOUNT_update/",
   GETGLDATA:"/currency_gl/",
   INSERTGLDATA:"/GL_ACCOUNT_create/",
+  FETCHSTGFIN:"/Retrieve_stg_fin/",
 };

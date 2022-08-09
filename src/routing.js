@@ -14,6 +14,7 @@ import TransactionReversal from "./Pages/TransactionReversal";
 import CostChange from "./Components/CostChange";
 import GlAccount from "./Components/GLAccount";
 import GLCreation from "./Components/GLCreation";
+import FinanceInterface from "./Components/FinanaceInterface"
 
 function Routing() {
   return (
@@ -33,6 +34,7 @@ function Routing() {
         <Route path="/Cost-Maintenance" element={<CostChange />} />
         <Route path="/Account-maintenance" element={<GlAccount />} />  
         <Route path="/ACCOUNT-CREATION" element={<GLCreation />} /> 
+        <Route path="/Finance-Interface" element={<FinanceInterface />} />
       </Route>
     </Routes>
   );

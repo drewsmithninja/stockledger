@@ -121,6 +121,19 @@ export const GetItems = () => {
           },
         ],
       },
+      {
+        id: 9,
+        name: "Finance Interface",
+        icon: <SendIcon sx={{color: "#66cdaa"}}/>,
+        subitems: [
+          {
+            id: 1,
+            name: "Finance Interface Data",
+            },
+
+            
+        ],
+      },
     ],
   };
   return json;

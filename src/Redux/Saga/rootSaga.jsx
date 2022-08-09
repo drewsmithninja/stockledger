@@ -9,6 +9,7 @@ import {TransactionReversal,updateTransactionReversal,cancelTransactionReversal,
 import { CostChange, updateCostChange } from "./CostChangeSaga"; 
 import {GlAccount,updateGlAccount,GLcurrency} from "./glaccountSaga";
 import {GlAccountcreation} from "./glaccountSagacreation";
+import {FinanceInterface} from "./FinanceInterfaceSaga"
 
 export function* rootSaga() {
   yield all([
@@ -37,5 +38,6 @@ export function* rootSaga() {
     fork(GlAccount),
     fork(GLcurrency),
     fork(GlAccountcreation),
+    fork(FinanceInterface)
   ]);
 }

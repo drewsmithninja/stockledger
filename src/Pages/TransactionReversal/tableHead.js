@@ -49,7 +49,7 @@ export const headCells = [
     width: "100%",
   },
   {
-    id: "HIER3 DESC",
+    id: "HIER3_DESC",
     numeric: false,
     disablePadding: true,
     label: "HIER3 DESC",

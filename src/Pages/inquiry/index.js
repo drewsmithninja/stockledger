@@ -13,8 +13,7 @@ import Typography from "@mui/material/Typography";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import Drawer from "@mui/material/Drawer";
 import { makeStyles } from "@mui/styles";
-import { getInquiryDataRequest } from "../../Redux/Action/inquiry";
-import { getClassDataRequest } from "../../Redux/Action/errorProcessing";
+import { getInquiryDataRequest,getClassDataRequest} from "../../Redux/Action/inquiry";
 import CircularProgress from "@mui/material/CircularProgress";
 import { headCells } from "./tableHead";
 import SearchIcon from "@mui/icons-material/Search";
@@ -125,11 +124,9 @@ const InquryScreen = () => {
     right: false,
   });
   const ErrorProceesClasses = useStyles();
-  const ErrorProcessingData = useSelector((state) => state.InquiryReducers);
-  //console.log(ErrorProcessingData);
+  const InquiryData = useSelector((state) => state.InquiryReducers);
+  //console.log(InquiryData);
 
-  const InquiryData = useSelector((state) => state.ErrorProcessingReducers);
-  console.log("Inq", InquiryData);
   const dispatch = useDispatch();
 
   const toggleDrawer = (anchor, open) => (event) => {
@@ -210,16 +207,16 @@ const InquryScreen = () => {
     }
   }, [inputValue]);
 
-  useEffect(() => {
-    if (ErrorProcessingData.isError) {
-      setIsError(true);
-    } else if (ErrorProcessingData.isSuccess) {
-      setIsSuccess(true);
-    } else {
-      setIsError(false);
-      setTabledata("");
-    }
-  }, [ErrorProcessingData]);
+  // useEffect(() => {
+  //   if (InquiryData.isError) {
+  //     setIsError(true);
+  //   } else if (InquiryData.isSuccess) {
+  //     setIsSuccess(true);
+  //   } else {
+  //     setIsError(false);
+  //     setTabledata("");
+  //   }
+  // }, [InquiryData]);
 
   useEffect(() => {
     if (isSearch) {
@@ -234,20 +231,14 @@ const InquryScreen = () => {
 
   useEffect(() => {
     if (
-      ErrorProcessingData?.data?.Data &&
-      Array.isArray(ErrorProcessingData?.data?.Data)
+      InquiryData?.data?.Data &&
+      Array.isArray(InquiryData?.data?.Data)
     ) {
-      setTabledata(serializedata(ErrorProcessingData?.data?.Data));
-      setAllData(serializedata(ErrorProcessingData?.data?.Data));
+      setTabledata(serializedata(InquiryData?.data?.Data));
+      setAllData(serializedata(InquiryData?.data?.Data));
       setLoading(false);
       setSearch(false);
-    } else {
-      setSearch(false);
-    }
-  }, [ErrorProcessingData?.data]);
-
-  useEffect(() => {
-    if (
+    }if (
       InquiryData?.data?.itemData &&
       Array.isArray(InquiryData?.data?.itemData)
     ) {
@@ -290,10 +281,10 @@ const InquryScreen = () => {
     });
   };
 
-  const handleMsgClose = () => {
-    setIsError(false);
-    setIsSuccess(false);
-  };
+  // const handleMsgClose = () => {
+  //   setIsError(false);
+  //   setIsSuccess(false);
+  // };
 
   const onReset = (event) => {
     initialsearch.USER = "";
@@ -345,7 +336,7 @@ const InquryScreen = () => {
       });
     }
   };
-  console.log(JSON.stringify(tabledata));
+  //console.log(JSON.stringify(tabledata));
 
   const selectClass = (event, value) => {
     console.log(value);
@@ -745,7 +736,7 @@ const InquryScreen = () => {
           />
         )
       )}
-
+{/* 
       <Stack spacing={2} sx={{ width: "100%" }}>
         <Snackbar
           open={isError || isSuccess}
@@ -754,22 +745,22 @@ const InquryScreen = () => {
         >
           <Alert
             onClose={handleMsgClose}
-            severity={ErrorProcessingData?.isSuccess ? "success" : "error"}
+            severity={InquiryData?.isSuccess ? "success" : "error"}
             sx={{ width: "100%" }}
           >
             {isSuccess === true
-              ? ErrorProcessingData?.messgae
-                ? ErrorProcessingData?.messgae
+              ? InquiryData?.messgae
+                ? InquiryData?.messgae
                 : "Data Successfully Fetched"
               : ""}
             {isError === true
-              ? ErrorProcessingData?.messgae
-                ? ErrorProcessingData?.messgae
+              ? InquiryData?.messgae
+                ? InquiryData?.messgae
                 : "Data Not Found"
               : ""}
           </Alert>
         </Snackbar>
-      </Stack>
+      </Stack> */}
     </Box>
   );
 };

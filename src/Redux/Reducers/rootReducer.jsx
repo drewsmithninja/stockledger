@@ -9,6 +9,7 @@ import InquiryReducers from "./inquiryReducers";
 import TransactionReversalReducers from "./transactionReversalReducers";
 import glaccountReducers from "./glaccountReducers";
 import glcreationReducers from "./glcreationReducers";
+import FinanceInterfaceReducers from "./financeInterfaceReducer";
 
 const rootReducer = combineReducers({
   StagingProcessingReducers,
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
   CostChangeReducers,
   glaccountReducers,
   glcreationReducers,
+  FinanceInterfaceReducers
 });
 
 export default rootReducer;
