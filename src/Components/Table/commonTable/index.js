@@ -194,9 +194,9 @@ const CommonTable = ({
                           if(pageName == "error"){
                               editable = false;
                             if(key == "ITEM"){
-                                editable = row["ERR_MSG"] === "ITEM IS NULL" || row["ERR_MSG"] == "INVALID ITEM";
+                                editable = row["ERR_MSG"] === "ITEM IS NULL" || row["ERR_MSG"] == "Invalid Item;";
                             }if(key == "LOCATION"){
-                              editable = row["ERR_MSG"] == "LOCATION is null" || row["ERR_MSG"] == "Invalid Location" || row['ERR_MSG'] === "invalid location currency combination";
+                              editable = row["ERR_MSG"] == "LOCATION is null" || row["ERR_MSG"] == "Invalid Location;" || row['ERR_MSG'] === "invalid location currency combination";
                             }if(key == "TRN_NAME"){
                               editable = row["ERR_MSG"] === "invalid trn_type" || row["ERR_MSG"] === "TRN_TYPE AREF COMBINATION invalid";
                             }if(key == "QTY"){
@@ -204,7 +204,7 @@ const CommonTable = ({
                             }if(key == "CURRENCY"){
                               editable = row["ERR_MSG"] === "invalid currency" || row['ERR_MSG'] === "invalid location currency combination";
                             }if(key == 'TRN_DATE'){
-                              editable = row['ERR_MSG'] === "trn_date cannot be in future";
+                              editable = row['ERR_MSG'] === "trn_date cannot be in future;";
                               console.log("date",editable);
                             }
                           }
