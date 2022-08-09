@@ -418,11 +418,11 @@ const StageProcessing = () => {
       }}
     >
       <DialogTitle id="responsive-dialog-title">
-        {"Are you want to submit data?"}
+        {"Do you want to submit data?"}
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Please click to continue for submit data. 
+           
         </DialogContentText>
       </DialogContent>
       <DialogActions>

@@ -106,7 +106,7 @@ console.log(dailyCountData,stageCountData,errorCountData);
            </Grid>
            <Grid item  xs={2} sm={4} md={4}>
                 <Item style={{background:"#dab0eb"}}>
-                <h3>Error Count</h3>
+                <h3>Tran Count</h3>
                 {Object.entries(errorCountData).map(([key,value])=>{
                      return <div>{key} : {value.toString()}</div>
                       }
