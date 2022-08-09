@@ -229,16 +229,16 @@ const ErrorProcessing = () => {
     }
   }, [inputValue]);
 
-  // useEffect(() => {
-  //   if (ErrorProcessingData.isError) {
-  //     setIsError(true);
-  //   } else if (ErrorProcessingData.isSuccess) {
-  //     setIsSuccess(true);
-  //   } else {
-  //     setIsError(false);
-  //     setTabledata("");
-  //   }
-  // }, [ErrorProcessingData]);
+  useEffect(() => {
+    if (ErrorProcessingData.isError) {
+      setIsError(true);
+    } else if (ErrorProcessingData.isSuccess) {
+      setIsSuccess(true);
+    } else {
+      setIsError(false);
+      setTabledata("");
+    }
+  }, [ErrorProcessingData]);
 
   useEffect(() => {
     if (isSubmit) {
@@ -359,10 +359,10 @@ console.log("test",tabledata)
     setOpen(false);
   };
 
-  // const handleMsgClose = () => {
-  //   setIsError(false);
-  //   setIsSuccess(false);
-  // };
+  const handleMsgClose = () => {
+    setIsError(false);
+    setIsSuccess(false);
+  };
 
   const onReset = (event) => {
     initialsearch.HIER1 = [];
@@ -964,7 +964,7 @@ console.log("test",tabledata)
           />
         )
       )}
-{/* 
+
       <Stack spacing={2} sx={{ width: "100%" }}>
         <Snackbar
           open={isError || isSuccess}
@@ -981,7 +981,7 @@ console.log("test",tabledata)
               : "Data Successfully Fetched"}
           </Alert>
         </Snackbar>
-      </Stack> */}
+      </Stack>
       {/* <Modal
         open={open}
         onClose={() => {setOpen(false)}}
